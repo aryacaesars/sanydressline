@@ -12,3 +12,43 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Category {
+  CategoryID Int      @id @default(autoincrement())
+  Name       String   @unique
+  CreatedAt  DateTime @default(now())
+  UpdatedAt  DateTime @updatedAt
+  Dress      Dress[]
+}
+
+model Dress {
+  DressID     Int      @id @default(autoincrement())
+  Name        String
+  Description String?
+  Price       Decimal
+  Stock       Int
+  Status      String
+  OrderCount  Int
+  CreatedAt   DateTime @default(now())
+  UpdatedAt   DateTime @updatedAt
+  CategoryID  Int
+  Category    Category @relation(fields: [CategoryID], references: [CategoryID])
+  Image       Image[]
+}
+
+model Image {
+  ImageID   Int      @id @default(autoincrement())
+  DressID   Int
+  Url       String
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
+  Dress     Dress    @relation(fields: [DressID], references: [DressID])
+}
+
+model PageContent {
+  ContentID Int      @id @default(autoincrement())
+  PageName  String
+  Section   String
+  Content   String
+  UpdatedAt DateTime @updatedAt
+}
