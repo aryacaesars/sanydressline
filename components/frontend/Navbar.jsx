@@ -1,14 +1,18 @@
+// components/frontend/Navbar.jsx
 "use client";
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import CartIcon from "@/components/frontend/CartIcon";
 import logo from '../../public/logo.svg';
 
-const Navbar = () => {
+const Navbar = ({ cart = [] }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const router = useRouter();
 
     const menuItems = [
         { name: "Beranda", href: "#" },
@@ -27,9 +31,13 @@ const Navbar = () => {
         };
     }, []);
 
+    const handleCartClick = () => {
+        router.push('/checkout');
+    };
+
     return (
         <nav
-            className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+            className={`fixed top-0 md:px-20 left-0 w-full z-50 transition-all duration-300 ${
                 isScrolled ? 'bg-white/70 backdrop-blur-lg lg:shadow-lg' : 'bg-transparent'
             }`}
         >
@@ -49,6 +57,9 @@ const Navbar = () => {
                         </Link>
                     ))}
                 </div>
+
+                {/* Cart Icon */}
+                <CartIcon itemCount={cart.length} onClick={handleCartClick} />
 
                 {/* Hamburger Icon untuk Mobile */}
                 <div className={`lg:hidden relative z-50`}>
