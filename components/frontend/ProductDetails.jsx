@@ -22,7 +22,7 @@ const ProductDetails = ({ product, onClose, onAddToCart }) => {
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
                     transition={{ type: 'spring', damping: 15 }}
-                    className="bg-white rounded-lg shadow-xl max-w-3xl w-full overflow-hidden"
+                    className="bg-white rounded-xl shadow-xl max-w-3xl w-full overflow-hidden"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="flex">

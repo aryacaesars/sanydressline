@@ -1,12 +1,12 @@
 // components/frontend/ProductShowcase.jsx
-'use client'
-
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+"use client";
+import React, {useState} from 'react';
+import {motion} from 'framer-motion';
 import ProductCard from "@/components/frontend/Product";
 import ProductDetails from "@/components/frontend/ProductDetails";
 import Navbar from "@/components/frontend/Navbar";
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
+import {useCart} from '@/context/CartContext';
 import {
     Pagination,
     PaginationContent,
@@ -21,12 +21,12 @@ const ITEMS_PER_PAGE = 6;
 export default function DressShowcase() {
     const [currentPage, setCurrentPage] = useState(1);
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [cart, setCart] = useState([]);
+    const {cartItems, addToCart} = useCart();
     const router = useRouter();
 
     const dresses = [
         // ... (data dresses)
-         {
+        {
             id: 1,
             image: "/placeholder.svg?height=400&width=400",
             title: "Elegant Evening Gown",
@@ -122,7 +122,11 @@ export default function DressShowcase() {
     const currentDresses = dresses.slice(startIndex, endIndex);
 
     const handleAddToCart = (product) => {
-        setCart([...cart, product]);
+        if (product.price && !isNaN(product.price)) {
+            addToCart(product);
+        } else {
+            console.error('Invalid product price:', product);
+        }
     };
 
     const handleProductClick = (product) => {
@@ -139,19 +143,20 @@ export default function DressShowcase() {
 
     return (
         <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-            <Navbar cart={cart} />
+            <Navbar cart={cartItems}/>
             <div className="max-w-7xl mx-auto">
                 <div className="flex justify-between items-center mb-10">
                     <motion.h1
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5 }}
+                        initial={{opacity: 0, y: -20}}
+                        animate={{opacity: 1, y: 0}}
+                        transition={{duration: 0.5}}
                         className="text-4xl font-extrabold text-gray-900"
                     >
                         Elegant Dress Collection
                     </motion.h1>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div
+                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {currentDresses.map((dress) => (
                         <ProductCard
                             key={dress.id}
@@ -194,7 +199,9 @@ export default function DressShowcase() {
                 </div>
             </div>
             {selectedProduct && (
-                <ProductDetails product={selectedProduct} onClose={closeProductDetails} onAddToCart={handleAddToCart} />
+                <ProductDetails product={selectedProduct}
+                                onClose={closeProductDetails}
+                                onAddToCart={handleAddToCart}/>
             )}
         </div>
     );

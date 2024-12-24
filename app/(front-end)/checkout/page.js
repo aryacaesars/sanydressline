@@ -1,24 +1,22 @@
+// app/(front-end)/checkout/page.js
 'use client'
 
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/context/CartContext';
+import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
 
 export default function Checkout() {
     const router = useRouter();
+    const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
 
-    // In a real application, you would fetch the cart items from a state management solution or API
-    const cartItems = [
-        { id: 1, title: "Elegant Evening Gown", price: 299.99, quantity: 1 },
-        { id: 2, title: "Floral Summer Dress", price: 79.99, quantity: 2 },
-    ];
-
-    const total = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
 
     return (
-        <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl mx-auto rounded-lg shadow-xl p-8">
+        <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl my-20 mx-auto rounded-lg shadow-xl p-8">
                 <motion.h1
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -39,8 +37,21 @@ export default function Checkout() {
                             <div>
                                 <h2 className="font-semibold">{item.title}</h2>
                                 <p className="text-gray-600">Quantity: {item.quantity}</p>
+                                <div className="flex items-center space-x-2">
+                                    <Button onClick={() => decreaseQuantity(item.id)} className="flex items-center justify-center p-2">
+                                        <FaMinus />
+                                    </Button>
+                                    <Button onClick={() => increaseQuantity(item.id)} className="flex items-center justify-center p-2">
+                                        <FaPlus />
+                                    </Button>
+                                </div>
                             </div>
-                            <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                            <div className="flex items-center space-x-4">
+                                <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
+                                <Button onClick={() => removeFromCart(item.id)} className="text-red-500 flex items-center justify-center p-2">
+                                    <FaTrash />
+                                </Button>
+                            </div>
                         </motion.div>
                     ))}
                     <motion.div
@@ -74,4 +85,3 @@ export default function Checkout() {
         </div>
     );
 }
-
