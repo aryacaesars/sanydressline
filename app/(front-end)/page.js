@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import HeroSection from "@/components/frontend/HeroSection";
 
 export default function Home() {
   return (
@@ -8,6 +9,7 @@ export default function Home() {
       {/*<Button>*/}
       {/*  <LoginLink>Sign in</LoginLink>*/}
       {/*</Button>*/}
+      <HeroSection/>
     </div>
   );
 }
