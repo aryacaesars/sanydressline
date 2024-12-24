@@ -42,27 +42,20 @@ export async function POST(req) {
     const body = await req.json();
     const isArray = Array.isArray(body);
 
-    if (!isArray) {
-      const { PageName, Section, SubSection, Content } = body;
-
-      if (!PageName || !Section || !SubSection || !Content) {
-        return new Response(
-          JSON.stringify({ error: "Missing required fields" }),
-          {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          }
-        );
+    // Utilitas untuk validasi input
+    const validateInput = ({ PageName, Section, Title, Paragraph, Img }) => {
+      if (!PageName || !Section || !Title || !Paragraph || !Img) {
+        throw new Error("Missing required fields");
       }
+    };
 
+    if (!isArray) {
+      // Validasi untuk single object
+      validateInput(body);
+
+      // Buat satu entri
       const newContent = await prisma.pageContent.create({
-        data: {
-          PageName,
-          Section,
-          SubSection,
-          Content,
-          UpdatedAt: new Date(),
-        },
+        data: body,
       });
 
       return new Response(JSON.stringify(newContent), {
@@ -70,33 +63,17 @@ export async function POST(req) {
         headers: { "Content-Type": "application/json" },
       });
     } else {
-      const createdContents = [];
+      // Validasi untuk array
+      body.forEach(validateInput);
 
-      for (const item of body) {
-        const { PageName, Section, SubSection, Content } = item;
-
-        if (!PageName || !Section || !SubSection || !Content) {
-          return new Response(
-            JSON.stringify({ error: "Missing required fields in array item" }),
-            {
-              status: 400,
-              headers: { "Content-Type": "application/json" },
-            }
-          );
-        }
-
-        const newContent = await prisma.pageContent.create({
-          data: {
-            PageName,
-            Section,
-            SubSection,
-            Content,
-            UpdatedAt: new Date(),
-          },
-        });
-
-        createdContents.push(newContent);
-      }
+      // Buat banyak entri menggunakan Promise.all
+      const createdContents = await Promise.all(
+        body.map((item) =>
+          prisma.pageContent.create({
+            data: item,
+          })
+        )
+      );
 
       return new Response(JSON.stringify(createdContents), {
         status: 201,
@@ -104,9 +81,9 @@ export async function POST(req) {
       });
     }
   } catch (error) {
-    console.error(error);
+    console.error(error.message || error);
     return new Response(
-      JSON.stringify({ error: "Error creating page content" }),
+      JSON.stringify({ error: error.message || "Error creating page content" }),
       {
         status: 500,
         headers: { "Content-Type": "application/json" },
@@ -120,7 +97,7 @@ export async function PUT(req) {
     const url = new URL(req.url);
     const ContentID = url.searchParams.get("ContentID");
 
-    // Validasi query parameter
+    // Validasi query parameter ContentID
     if (!ContentID) {
       return new Response(
         JSON.stringify({
@@ -134,10 +111,10 @@ export async function PUT(req) {
     }
 
     const body = await req.json();
-    const { PageName, Section, SubSection, Content } = body;
+    const { PageName, Section, Title, Paragraph, Img } = body;
 
-    // Validasi body
-    if (!PageName || !Section || !SubSection || !Content) {
+    // Validasi body untuk memastikan semua field yang diperlukan ada
+    if (!PageName || !Section || !Title || !Paragraph || !Img) {
       return new Response(
         JSON.stringify({ error: "Missing required fields in body" }),
         {
@@ -168,9 +145,9 @@ export async function PUT(req) {
       data: {
         PageName,
         Section,
-        SubSection,
-        Content,
-        UpdatedAt: new Date(),
+        Title,
+        Paragraph,
+        Img
       },
     });
 
@@ -192,62 +169,3 @@ export async function PUT(req) {
     );
   }
 }
-
-// nu PATCH sigana can butuh jadi komen hela we
-// export async function PATCH(req) {
-//   try {
-//     const url = new URL(req.url);
-//     const PageName = url.searchParams.get("PageName");
-//     const Section = url.searchParams.get("Section");
-//     const SubSection = url.searchParams.get("SubSection");
-
-//     // Validasi kunci unik wajib
-//     if (!PageName || !Section || !SubSection) {
-//       return new Response(
-//         JSON.stringify({ error: "Missing required query parameters" }),
-//         {
-//           status: 400,
-//           headers: { "Content-Type": "application/json" },
-//         }
-//       );
-//     }
-
-//     const body = await req.json();
-//     const { Content } = body;
-
-//     // Logika pembaruan hanya untuk field yang diberikan
-//     const dataToUpdate = {
-//       ...(Content && { Content }),
-//       UpdatedAt: new Date(),
-//     };
-
-//     if (Object.keys(dataToUpdate).length === 1) {
-//       return new Response(
-//         JSON.stringify({ error: "No valid fields to update" }),
-//         {
-//           status: 400,
-//           headers: { "Content-Type": "application/json" },
-//         }
-//       );
-//     }
-
-//     const updatedContent = await prisma.pageContent.update({
-//       where: { PageName_Section_SubSection: { PageName, Section, SubSection } },
-//       data: dataToUpdate,
-//     });
-
-//     return new Response(JSON.stringify(updatedContent), {
-//       status: 200,
-//       headers: { "Content-Type": "application/json" },
-//     });
-//   } catch (error) {
-//     console.error(error);
-//     return new Response(
-//       JSON.stringify({ error: "Error updating page content" }),
-//       {
-//         status: 500,
-//         headers: { "Content-Type": "application/json" },
-//       }
-//     );
-//   }
-// }
