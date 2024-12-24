@@ -46,9 +46,10 @@ model Image {
 }
 
 model PageContent {
-  ContentID Int      @id @default(autoincrement())
-  PageName  String
-  Section   String
-  Content   String
-  UpdatedAt DateTime @updatedAt
+  ContentID  Int      @id @default(autoincrement())
+  PageName   String
+  Section    String
+  SubSection String
+  Content    String
+  UpdatedAt  DateTime @updatedAt
 }
