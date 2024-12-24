@@ -27,7 +27,7 @@ const AboutSection = () => {
 
     return (
         <section
-            className="container mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6"
+            className="container md:px-20 mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-40"
             >
             <div className="flex-1 order-2 md:order-1 md:ml-2">
                 <motion.div

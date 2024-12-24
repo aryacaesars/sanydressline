@@ -28,7 +28,7 @@ const HeroSection = () => {
 
     return (
         <section
-            className="container mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-10">
+            className="container md:px-20 mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-10">
             <div className="flex-1">
                 <motion.h1
                     className="text-4xl font-bold text-green-800 leading-snug mb-4"
