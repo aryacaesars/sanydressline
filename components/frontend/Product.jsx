@@ -20,7 +20,7 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
           <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
-              className="relative h-64 overflow-hidden cursor-pointer"
+              className="relative h-48 sm:h-64 overflow-hidden cursor-pointer"
               onClick={() => onProductClick(product)}
           >
             <img
@@ -29,12 +29,12 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
                 className="w-full h-full object-cover transition-transform duration-300 ease-in-out transform hover:scale-110"
             />
           </motion.div>
-          <CardContent className="p-4">
+          <CardContent className="p-2 sm:p-4">
             <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="text-xl font-semibold text-gray-800 mb-2 truncate"
+                className="text-lg sm:text-xl font-semibold text-gray-800 mb-1 sm:mb-2 truncate"
             >
               {title}
             </motion.h2>
@@ -42,20 +42,20 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="mb-2"
+                className="mb-1 sm:mb-2"
             >
-              <span className="text-2xl font-bold text-primary">${price.toFixed(2)}</span>
+              <span className="text-xl sm:text-2xl font-bold text-primary">${price.toFixed(2)}</span>
             </motion.div>
             <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
-                className="text-gray-600 text-sm mb-4 line-clamp-2"
+                className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2"
             >
               {description}
             </motion.p>
           </CardContent>
-          <CardFooter className="p-4 bg-gray-50">
+          <CardFooter className="p-2 sm:p-4 bg-gray-50">
             <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -72,4 +72,3 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
 };
 
 export default ProductCard;
-
