@@ -40,13 +40,16 @@ model Size {
 }
 
 model Image {
-  ImageID   Int      @id @default(autoincrement())
-  DressID   Int
-  Url       String
-  Alt       String
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime @updatedAt
-  Dress     Dress    @relation(fields: [DressID], references: [DressID])
+  ImageID     Int          @id @default(autoincrement())
+  PublicID    String
+  Url         String
+  Alt         String
+  CreatedAt   DateTime     @default(now())
+  UpdatedAt   DateTime     @updatedAt
+  DressID     Int?
+  ContentID   Int?
+  Dress       Dress?       @relation(fields: [DressID], references: [DressID])
+  PageContent PageContent? @relation(fields: [ContentID], references: [ContentID])
 }
 
 model PageContent {
@@ -56,5 +59,6 @@ model PageContent {
   Title     String
   Paragraph String
   Img       Json
+  Images    Image[]
   UpdatedAt DateTime @updatedAt
 }

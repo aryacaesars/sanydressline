@@ -1,11 +1,24 @@
 import { PrismaClient } from "@prisma/client";
+import { NextResponse } from "next/server";
+import cloudinary from "../../../lib/api/config/cloudinary-config";
 
 const prisma = new PrismaClient();
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function POST(req) {
   try {
-    const body = await req.json();
-    const isArray = Array.isArray(body);
+    const formData = await req.formData();
+    const Images = formData.getAll("Image");
+    const Name = formData.get("Name");
+    const Description = formData.get("Description");
+    const Price = formData.get("Price");
+    const CategoryID = formData.get("CategoryID");
+    const Sizes = JSON.parse(formData.get("Sizes"));
 
     // Utility untuk validasi input
     const validateInput = async ({
@@ -13,7 +26,7 @@ export async function POST(req) {
       Description,
       Price,
       CategoryID,
-      Sizes, // Pastikan ada informasi ukuran dan stok untuk tiap ukuran
+      Sizes,
     }) => {
       if (!Name || !Description || !Price || !CategoryID || !Sizes) {
         throw new Error("Missing required fields");
@@ -26,99 +39,84 @@ export async function POST(req) {
       });
     };
 
-    if (!isArray) {
-      // Validasi untuk single object
-      await validateInput(body);
+    // Validasi input
+    await validateInput({ Name, Description, Price, CategoryID, Sizes });
 
-      // Membulatkan harga menjadi dua desimal sebelum disimpan
-      const priceFormatted = new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-      }).format(body.Price);
-      const priceRounded = parseFloat(body.Price).toFixed(2); // Membulatkan ke dua desimal
+    // Upload images to Cloudinary
+    const imageUrls = [];
+    const publicIds = [];
+    for (const Image of Images) {
+      const buffer = Buffer.from(await Image.arrayBuffer());
+      const uploadResponse = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "sanydressline" }, // Optional: specify a folder in Cloudinary
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
+          }
+        );
+        uploadStream.end(buffer);
+      });
+      imageUrls.push(uploadResponse.secure_url);
+      publicIds.push(uploadResponse.public_id);
+    }
 
-      // Buat satu entri untuk Dress
-      const newDress = await prisma.dress.create({
-        data: {
-          Name: body.Name,
-          Description: body.Description,
-          Price: parseFloat(priceRounded), // Pastikan harga dibulatkan
-          OrderCount: 0,
-          Category: {
-            connect: { CategoryID: body.CategoryID }, // Menghubungkan dengan category
-          },
-          // Tambahkan Sizes terkait dengan Dress
-          Sizes: {
-            create: body.Sizes.map((size) => ({
-              Size: size.Size,
-              Stock: size.Stock,
-            })),
-          },
+    // Membulatkan harga menjadi dua desimal sebelum disimpan
+    const priceFormatted = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    }).format(Price);
+    const priceRounded = parseFloat(Price).toFixed(2); // Membulatkan ke dua desimal
+
+    // Buat satu entri untuk Dress
+    const newDress = await prisma.dress.create({
+      data: {
+        Name,
+        Description,
+        Price: parseFloat(priceRounded), // Pastikan harga dibulatkan
+        OrderCount: 0,
+        Category: {
+          connect: { CategoryID: parseInt(CategoryID) }, // Menghubungkan dengan category
         },
-        include: {
-          Category: true,
-          Sizes: true,
+        // Tambahkan Sizes terkait dengan Dress
+        Sizes: {
+          create: Sizes.map((size) => ({
+            Size: size.Size,
+            Stock: size.Stock,
+          })),
+        },
+      },
+      include: {
+        Category: true,
+        Sizes: true,
+      },
+    });
+
+    // Buat entri untuk setiap Image
+    for (let i = 0; i < imageUrls.length; i++) {
+      await prisma.image.create({
+        data: {
+          DressID: newDress.DressID,
+          PublicID: publicIds[i],
+          Url: imageUrls[i],
+          Alt: `${Name} - Image ${i + 1}`,
         },
       });
-
-      return new Response(
-        JSON.stringify({
-          ...newDress,
-          PriceFormatted: priceFormatted, // Tambahkan priceFormatted dalam respons
-        }),
-        {
-          status: 201,
-          headers: { "Content-Type": "application/json" },
-        }
-      );
     }
 
-    // Validasi untuk multiple objects
-    for (const item of body) {
-      await validateInput(item);
-    }
-
-    // Buat banyak entri untuk Dress
-    const newDresses = await prisma.$transaction(
-      body.map((item) =>
-        prisma.dress.create({
-          data: {
-            Name: item.Name,
-            Description: item.Description,
-            Price: parseFloat(item.Price).toFixed(2), // Membulatkan harga ke dua desimal
-            OrderCount: 0,
-            Category: {
-              connect: { CategoryID: item.CategoryID }, // Menghubungkan dengan category
-            },
-            // Tambahkan Sizes terkait dengan Dress
-            Sizes: {
-              create: item.Sizes.map((size) => ({
-                Size: size.Size,
-                Stock: size.Stock,
-              })),
-            },
-          },
-          include: {
-            Category: true,
-            Sizes: true,
-          },
-        })
-      )
+    return new Response(
+      JSON.stringify({
+        ...newDress,
+        PriceFormatted: priceFormatted,
+      }),
+      {
+        status: 201,
+        headers: { "Content-Type": "application/json" },
+      }
     );
-
-    // Format harga untuk setiap dress yang berhasil dibuat
-    const formattedDresses = newDresses.map((dress) => ({
-      ...dress,
-      PriceFormatted: new Intl.NumberFormat("id-ID", {
-        style: "currency",
-        currency: "IDR",
-      }).format(dress.Price),
-    }));
-
-    return new Response(JSON.stringify(formattedDresses), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
   } catch (error) {
     console.error(error);
     return new Response(
@@ -133,17 +131,18 @@ export async function POST(req) {
   }
 }
 
-export async function GET(req) {
+export async function GET() {
   try {
-    const dress = await prisma.dress.findMany({
+    const dresses = await prisma.dress.findMany({
       include: {
         Category: true,
         Sizes: true,
+        Image: true,
       },
     });
 
     // Format harga untuk setiap dress
-    const formattedDresses = dress.map((dress) => ({
+    const formattedDresses = dresses.map((dress) => ({
       ...dress,
       PriceFormatted: new Intl.NumberFormat("id-ID", {
         style: "currency",
@@ -151,20 +150,14 @@ export async function GET(req) {
       }).format(dress.Price),
     }));
 
-    return new Response(JSON.stringify(formattedDresses), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(formattedDresses, { status: 200 });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error retrieving dress",
-      }),
+    return NextResponse.json(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+        error: error.message || "Error retrieving dresses",
+      },
+      { status: 500 }
     );
   }
 }
@@ -181,28 +174,66 @@ export async function DELETE(req) {
       });
     }
 
-    // Hapus semua size yang berkaitan dengan dress berdasarkan DressID
+    // Find all images associated with the dress
+    const images = await prisma.image.findMany({
+      where: { DressID: parseInt(dressID) },
+    });
+
+    // if (images.length === 0) {
+    //   return new Response(JSON.stringify({ error: "Images not found" }), {
+    //     status: 404,
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    // }
+
+    // Delete each image from Cloudinary
+    for (const image of images) {
+      try {
+        await cloudinary.uploader.destroy(image.PublicID);
+      } catch (error) {
+        console.error("Error deleting image from Cloudinary:", error);
+        return new Response(
+          JSON.stringify({ error: "Error deleting image from Cloudinary" }),
+          {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+      }
+    }
+
+    // Delete the dress and associated sizes from the database
     await prisma.size.deleteMany({
       where: { DressID: parseInt(dressID) },
     });
 
-    // Hapus dress berdasarkan DressID
+    // Delete the image records from the database
+    await prisma.image.deleteMany({
+      where: { DressID: parseInt(dressID) },
+    });
+
     const deletedDress = await prisma.dress.delete({
       where: { DressID: parseInt(dressID) },
     });
 
     return new Response(
-      JSON.stringify({ message: "Dress deleted successfully", deletedDress }),
+      JSON.stringify({
+        message: "Dress and associated images deleted successfully",
+        deletedDress,
+      }),
       {
         status: 200,
         headers: { "Content-Type": "application/json" },
       }
     );
   } catch (error) {
-    console.error(error);
+    if (error instanceof Error) {
+      console.error(error.stack);
+    }
+    console.error(error || "Unknown error");
     return new Response(
       JSON.stringify({
-        error: error.message || "Error deleting dress",
+        error: error?.message || "Error deleting dress",
       }),
       {
         status: 500,
@@ -224,10 +255,14 @@ export async function PUT(req) {
       });
     }
 
-    const body = await req.json();
-    const { Name, Description, Price, CategoryID, Sizes } = body;
+    const formData = await req.formData();
+    const Name = formData.get("Name");
+    const Description = formData.get("Description");
+    const Price = formData.get("Price");
+    const CategoryID = formData.get("CategoryID");
+    const Sizes = JSON.parse(formData.get("Sizes"));
 
-    // Validasi data yang diperlukan
+    // Validate input
     if (
       !Name ||
       !Description ||
@@ -245,7 +280,6 @@ export async function PUT(req) {
       );
     }
 
-    // Validasi setiap elemen di Sizes
     for (const size of Sizes) {
       if (!size.Size || size.Stock == null) {
         return new Response(
@@ -258,21 +292,21 @@ export async function PUT(req) {
       }
     }
 
-    // Membulatkan harga menjadi dua desimal sebelum disimpan
+    // Round price to two decimal places
     const priceRounded = parseFloat(Price).toFixed(2);
 
-    // Update dress berdasarkan DressID
+    // Update dress
     const updatedDress = await prisma.dress.update({
       where: { DressID: parseInt(dressID, 10) },
       data: {
         Name,
         Description,
-        Price: parseFloat(priceRounded), // Pastikan harga dibulatkan
+        Price: parseFloat(priceRounded),
         Category: {
-          connect: { CategoryID }, // Pastikan CategoryID valid
+          connect: { CategoryID: parseInt(CategoryID) },
         },
         Sizes: {
-          deleteMany: {}, // Hapus semua size lama terlebih dahulu
+          deleteMany: {},
           create: Sizes.map((size) => ({
             Size: size.Size,
             Stock: size.Stock,
@@ -285,7 +319,7 @@ export async function PUT(req) {
       },
     });
 
-    // Format harga untuk respons
+    // Format price for response
     const priceFormatted = new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
@@ -294,7 +328,7 @@ export async function PUT(req) {
     return new Response(
       JSON.stringify({
         ...updatedDress,
-        PriceFormatted: priceFormatted, // Tambahkan priceFormatted dalam respons
+        PriceFormatted: priceFormatted,
       }),
       {
         status: 200,
@@ -304,7 +338,6 @@ export async function PUT(req) {
   } catch (error) {
     console.error(error);
 
-    // Tangani error spesifik ketika dress tidak ditemukan
     if (error.code === "P2025") {
       return new Response(JSON.stringify({ error: "Dress not found" }), {
         status: 404,
@@ -312,7 +345,6 @@ export async function PUT(req) {
       });
     }
 
-    // Tangani error lainnya
     return new Response(
       JSON.stringify({
         error: error.message || "Error updating dress",
