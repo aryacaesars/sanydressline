@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -24,32 +18,47 @@ model Category {
 model Dress {
   DressID     Int      @id @default(autoincrement())
   Name        String
-  Description String?
+  Description String
   Price       Decimal
-  Stock       Int
-  Status      String
   OrderCount  Int
   CreatedAt   DateTime @default(now())
   UpdatedAt   DateTime @updatedAt
   CategoryID  Int
   Category    Category @relation(fields: [CategoryID], references: [CategoryID])
   Image       Image[]
+  Sizes       Size[]
+}
+
+model Size {
+  SizeID    Int      @id @default(autoincrement())
+  Size      String
+  DressID   Int
+  Dress     Dress    @relation(fields: [DressID], references: [DressID])
+  Stock     Int
+  CreatedAt DateTime @default(now())
+  UpdatedAt DateTime @updatedAt
 }
 
 model Image {
-  ImageID   Int      @id @default(autoincrement())
-  DressID   Int
-  Url       String
-  CreatedAt DateTime @default(now())
-  UpdatedAt DateTime @updatedAt
-  Dress     Dress    @relation(fields: [DressID], references: [DressID])
+  ImageID     Int          @id @default(autoincrement())
+  PublicID    String
+  Url         String
+  Alt         String
+  CreatedAt   DateTime     @default(now())
+  UpdatedAt   DateTime     @updatedAt
+  DressID     Int?
+  ContentID   Int?
+  Dress       Dress?       @relation(fields: [DressID], references: [DressID])
+  PageContent PageContent? @relation(fields: [ContentID], references: [ContentID])
 }
 
 model PageContent {
-  ContentID  Int      @id @default(autoincrement())
-  PageName   String
-  Section    String
-  SubSection String
-  Content    String
-  UpdatedAt  DateTime @updatedAt
+  ContentID Int      @id @default(autoincrement())
+  PageName  String
+  Section   String
+  Title     String
+  Paragraph String
+  Img       Json
+  Images    Image[]
+  UpdatedAt DateTime @updatedAt
 }
