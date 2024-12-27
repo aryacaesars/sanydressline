@@ -6,7 +6,7 @@ import { X, ShoppingCart } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 
 const ProductDetails = ({ product, onClose, onAddToCart }) => {
-    const { image, title, price, description, sizes, color, material, careInstructions } = product;
+    const { Image, Name, PriceFormatted, Description, Sizes, Category, Material, CareInstructions } = product;
 
     return (
         <AnimatePresence>
@@ -27,7 +27,7 @@ const ProductDetails = ({ product, onClose, onAddToCart }) => {
                 >
                     <div className="flex">
                         <div className="w-1/2">
-                            <img src={image} alt={title} className="w-full h-full object-cover" />
+                            <img src={Image[0]?.Url} alt={Name} className="w-full h-full object-cover" />
                         </div>
                         <div className="w-1/2 p-6 relative">
                             <button
@@ -36,20 +36,20 @@ const ProductDetails = ({ product, onClose, onAddToCart }) => {
                             >
                                 <X size={24} />
                             </button>
-                            <h2 className="text-2xl font-bold mb-4">{title}</h2>
-                            <p className="text-3xl font-bold text-primary mb-4">${price.toFixed(2)}</p>
-                            <p className="text-gray-600 mb-4">{description}</p>
+                            <h2 className="text-2xl font-bold mb-4">{Name}</h2>
+                            <p className="text-3xl font-bold text-primary mb-4">{PriceFormatted}</p>
+                            <p className="text-gray-600 mb-4">{Description}</p>
                             <div className="mb-4">
                                 <h3 className="font-semibold mb-2">Available Sizes:</h3>
                                 <div className="flex gap-2">
-                                    {sizes.map((size) => (
-                                        <span key={size} className="px-2 py-1 border rounded">{size}</span>
+                                    {Sizes.map((size) => (
+                                        <span key={size.SizeID} className="px-2 py-1 border rounded">{size.Size}</span>
                                     ))}
                                 </div>
                             </div>
-                            <p className="mb-2"><span className="font-semibold">Color:</span> {color}</p>
-                            <p className="mb-2"><span className="font-semibold">Material:</span> {material}</p>
-                            <p className="mb-4"><span className="font-semibold">Care Instructions:</span> {careInstructions}</p>
+                            <p className="mb-2"><span className="font-semibold">Category:</span> {Category.Name}</p>
+                            <p className="mb-2"><span className="font-semibold">Material:</span> {Material}</p>
+                            <p className="mb-4"><span className="font-semibold">Care Instructions:</span> {CareInstructions}</p>
                             <Button
                                 className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
                                 onClick={() => onAddToCart(product)}
@@ -65,4 +65,3 @@ const ProductDetails = ({ product, onClose, onAddToCart }) => {
 };
 
 export default ProductDetails;
-

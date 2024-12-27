@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ShoppingCart } from 'lucide-react';
 
 const ProductCard = ({ product, onAddToCart, onProductClick }) => {
-  const { image, title, price, description } = product;
+  const { Image, Name, PriceFormatted, Description } = product;
 
   return (
       <Card className="w-full overflow-hidden bg-white shadow-lg rounded-lg">
@@ -24,8 +24,8 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
               onClick={() => onProductClick(product)}
           >
             <img
-                src={image}
-                alt={title}
+                src={Image[0]?.Url}
+                alt={Name}
                 className="w-full h-full object-cover transition-transform duration-300 ease-in-out transform hover:scale-110"
             />
           </motion.div>
@@ -36,7 +36,7 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
                 transition={{ delay: 0.2, duration: 0.5 }}
                 className="text-lg sm:text-xl font-semibold text-gray-800 mb-1 sm:mb-2 truncate"
             >
-              {title}
+              {Name}
             </motion.h2>
             <motion.div
                 initial={{ opacity: 0 }}
@@ -44,7 +44,7 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
                 transition={{ delay: 0.3, duration: 0.5 }}
                 className="mb-1 sm:mb-2"
             >
-              <span className="text-xl sm:text-2xl font-bold text-primary">${price.toFixed(2)}</span>
+              <span className="text-xl sm:text-2xl font-bold text-primary">{PriceFormatted}</span>
             </motion.div>
             <motion.p
                 initial={{ opacity: 0 }}
@@ -52,7 +52,7 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
                 transition={{ delay: 0.4, duration: 0.5 }}
                 className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2"
             >
-              {description}
+              {Description}
             </motion.p>
           </CardContent>
           <CardFooter className="p-2 sm:p-4 bg-gray-50">

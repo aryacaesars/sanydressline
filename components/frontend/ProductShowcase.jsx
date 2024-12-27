@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import ProductCard from "@/components/frontend/Product";
 import ProductDetails from "@/components/frontend/ProductDetails";
@@ -15,15 +15,28 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-import { dresses } from "@/lib/productDummy";
-
 const ITEMS_PER_PAGE = 6;
 
 export default function DressShowcase() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [dresses, setDresses] = useState([]);
   const { cartItems, addToCart } = useCart();
   const router = useRouter();
+
+  useEffect(() => {
+    const fetchDresses = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dress`);
+        const data = await response.json();
+        setDresses(data);
+      } catch (error) {
+        console.error("Error fetching dresses:", error);
+      }
+    };
+
+    fetchDresses();
+  }, []);
 
   const totalPages = Math.ceil(dresses.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -31,7 +44,7 @@ export default function DressShowcase() {
   const currentDresses = dresses.slice(startIndex, endIndex);
 
   const handleAddToCart = (product) => {
-    if (product.price && !isNaN(product.price)) {
+    if (product.Price && !isNaN(product.Price)) {
       addToCart(product);
     } else {
       console.error("Invalid product price:", product);
@@ -66,7 +79,7 @@ export default function DressShowcase() {
                 transition={{ duration: 0.5 }}
                 className="text-xl md:text-3xl font-extrabold text-gray-900 text-center md:text-left"
             >
-              Elegant Dress Collection
+              Dress Collection
             </motion.h1>
           </div>
           <div
@@ -75,7 +88,7 @@ export default function DressShowcase() {
           >
             {currentDresses.map((dress) => (
                 <ProductCard
-                    key={dress.id}
+                    key={dress.DressID}
                     product={dress}
                     onAddToCart={handleAddToCart}
                     onProductClick={handleProductClick}
