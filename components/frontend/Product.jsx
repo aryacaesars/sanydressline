@@ -11,7 +11,7 @@ const ProductCard = ({ title, price, image }) => {
       <div className="p-4 text-center">
         <h3 className="text-lg font-bold text-green-900">{title}</h3>
         <p className="text-green-800">Rp.{price}</p>
-        <button className="mt-4 px-4 py-2 border border-green-800 text-green-800 rounded-xl hover:bg-green-800 hover:text-white transition">
+        <button className="mt-4 px-4 py-2 border border-green-800 text-green-800 rounded hover:bg-green-800 hover:text-white transition">
           Pesan Sekarang
         </button>
       </div>
