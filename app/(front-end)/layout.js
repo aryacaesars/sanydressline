@@ -1,6 +1,7 @@
 import "../globals.css";
 import Navbar from "@/components/frontend/Navbar";
 import Footer from "@/components/frontend/Footer";
+import {CartProvider} from "@/context/CartContext";
 
 export const metadata = {
   title: "Create Next App",
@@ -11,11 +12,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+      <CartProvider>
+
       <Navbar/>
       {children}
       <div className="mt-96">
       <Footer/>
       </div>
+      </CartProvider>
       </body>
     </html>
   );
