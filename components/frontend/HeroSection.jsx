@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { CldImage } from "next-cloudinary";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import HeroSkeleton from "@/components/frontend/skeleton/HeroSkeleton";
 
 const HeroSection = () => {
   const [heroContent, setHeroContent] = useState(null);
@@ -37,11 +38,11 @@ const HeroSection = () => {
   }, [heroContent]);
 
   if (!heroContent) {
-    return <div>Loading...</div>;
+    return <HeroSkeleton />;
   }
 
   return (
-    <section className="container max-w-7xl min-h-screen mx-auto my-24 md:my-10 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-40 overflow-hidden">
+    <section className="container max-w-7xl min-h-screen mx-auto my-16 md:my-16 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-40 overflow-hidden">
       <div className="flex-1">
         <motion.h1
           className="text-2xl md:text-4xl font-bold text-green-800 leading-snug mb-4"

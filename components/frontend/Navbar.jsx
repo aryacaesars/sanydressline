@@ -7,11 +7,13 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import CartIcon from "@/components/frontend/CartIcon";
+import { useCart } from "@/context/CartContext";
 import logo from '../../public/logo.svg';
 
-const Navbar = ({ cart = [] }) => {
+const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { cartItems } = useCart();
     const router = useRouter();
 
     const menuItems = [
@@ -59,7 +61,7 @@ const Navbar = ({ cart = [] }) => {
                 </div>
 
                 {/* Cart Icon */}
-                <CartIcon itemCount={cart.length} onClick={handleCartClick} />
+                <CartIcon itemCount={cartItems.length} onClick={handleCartClick} />
 
                 {/* Hamburger Icon untuk Mobile */}
                 <div className={`lg:hidden relative z-50`}>
