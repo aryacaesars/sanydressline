@@ -1,3 +1,4 @@
+// components/frontend/ProductShowcase.jsx
 "use client";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
@@ -12,6 +13,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
+import ProductSkeleton from "@/components/frontend/skeleton/ProductSkeleton";
 
 const ProductCard = dynamic(() => import("@/components/frontend/Product"), { ssr: false });
 const ProductDetails = dynamic(() => import("@/components/frontend/ProductDetails"), { ssr: false });
@@ -22,29 +24,26 @@ export default function DressShowcase() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [dresses, setDresses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const { cartItems, addToCart } = useCart();
   const router = useRouter();
 
   useEffect(() => {
     const fetchDresses = async () => {
+      setLoading(true);
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dress`);
         const data = await response.json();
         setDresses(data);
       } catch (error) {
         console.error("Error fetching dresses:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchDresses();
   }, []);
-
-  useEffect(() => {
-    if (currentPage < totalPages) {
-      const nextPage = currentPage + 1;
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dress?page=${nextPage}`);
-    }
-  }, [currentPage]);
 
   const totalPages = useMemo(() => Math.ceil(dresses.length / ITEMS_PER_PAGE), [dresses.length]);
   const currentDresses = useMemo(() => dresses.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE), [currentPage, dresses]);
@@ -80,15 +79,17 @@ export default function DressShowcase() {
           </motion.h1>
         </div>
         <div id="product-section" className="grid grid-cols-3 gap-4 sm:gap-6">
-          {currentDresses.map((dress) => (
-            <ProductCard
-              key={dress.DressID}
-              product={dress}
-              onAddToCart={handleAddToCart}
-              onProductClick={handleProductClick}
-              className="text-xs"
-            />
-          ))}
+          {loading
+            ? Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => <ProductSkeleton key={index} />)
+            : currentDresses.map((dress) => (
+                <ProductCard
+                  key={dress.DressID}
+                  product={dress}
+                  onAddToCart={handleAddToCart}
+                  onProductClick={handleProductClick}
+                  className="text-xs"
+                />
+              ))}
         </div>
         <div className="mt-8 flex justify-center items-center">
           <Pagination>
