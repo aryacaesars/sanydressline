@@ -1,13 +1,17 @@
-'use client'
-
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
 
-const ProductCard = ({ product, onAddToCart, onProductClick }) => {
-  const { image, title, price, description } = product;
+const ProductCard = React.memo(({ product, onAddToCart, onProductClick }) => {
+  const { Image: ProductImage, Name, PriceFormatted, Description, Sizes } = product;
+  const totalStock = Sizes.reduce((acc, size) => acc + size.Stock, 0);
+
+  const handleAddToCart = () => {
+    onProductClick(product);
+  };
 
   return (
       <Card className="w-full overflow-hidden bg-white shadow-lg rounded-lg">
@@ -20,48 +24,59 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
           <motion.div
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.3 }}
-              className="relative h-64 overflow-hidden cursor-pointer"
+              className="relative h-48 sm:h-64 overflow-hidden cursor-pointer"
               onClick={() => onProductClick(product)}
           >
-            <img
-                src={image}
-                alt={title}
-                className="w-full h-full object-cover transition-transform duration-300 ease-in-out transform hover:scale-110"
+            <Image
+                src={ProductImage[0]?.Url}
+                alt={Name}
+                layout="fill"
+                objectFit="cover"
+                className="transition-transform duration-300 ease-in-out transform hover:scale-110"
+                loading="lazy"
             />
           </motion.div>
-          <CardContent className="p-4">
+          <CardContent className="p-2 sm:p-4">
             <motion.h2
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="text-xl font-semibold text-gray-800 mb-2 truncate"
+                className="text-lg sm:text-xl font-semibold text-gray-800 mb-1 sm:mb-2 truncate"
             >
-              {title}
+              {Name}
             </motion.h2>
             <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="mb-2"
+                className="mb-1 sm:mb-2"
             >
-              <span className="text-2xl font-bold text-primary">${price.toFixed(2)}</span>
+              <span className="text-xl sm:text-2xl font-bold text-primary">{PriceFormatted}</span>
             </motion.div>
             <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
-                className="text-gray-600 text-sm mb-4 line-clamp-2"
+                className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2"
             >
-              {description}
+              {Description}
+            </motion.p>
+            <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="text-gray-600 text-xs sm:text-sm"
+            >
+              Total Stock: {totalStock}
             </motion.p>
           </CardContent>
-          <CardFooter className="p-4 bg-gray-50">
+          <CardFooter className="p-2 sm:p-4 bg-gray-50">
             <motion.div
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 className="w-full"
             >
-              <Button onClick={() => onAddToCart(product)} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button onClick={handleAddToCart} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
                 <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
               </Button>
             </motion.div>
@@ -69,7 +84,6 @@ const ProductCard = ({ product, onAddToCart, onProductClick }) => {
         </motion.div>
       </Card>
   );
-};
+});
 
 export default ProductCard;
-

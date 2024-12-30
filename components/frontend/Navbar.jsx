@@ -7,11 +7,13 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import CartIcon from "@/components/frontend/CartIcon";
+import { useCart } from "@/context/CartContext";
 import logo from '../../public/logo.svg';
 
-const Navbar = ({ cart = [] }) => {
+const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { cartItems } = useCart();
     const router = useRouter();
 
     const menuItems = [
@@ -41,7 +43,7 @@ const Navbar = ({ cart = [] }) => {
                 isScrolled ? 'bg-white/70 backdrop-blur-lg lg:shadow-lg' : 'bg-transparent'
             }`}
         >
-            <div className="container mx-auto flex items-center justify-between py-4 px-6 lg:px-4">
+            <div className="container mx-auto max-w-7xl flex items-center justify-between py-4 px-6 lg:px-4">
                 {/* Logo */}
                 <Link href="/" className="flex-shrink-0">
                     <Image src={logo} priority={true} alt="SanyDressline Logo" width={128} height={32} />
@@ -59,7 +61,7 @@ const Navbar = ({ cart = [] }) => {
                 </div>
 
                 {/* Cart Icon */}
-                <CartIcon itemCount={cart.length} onClick={handleCartClick} />
+                <CartIcon itemCount={cartItems.length} onClick={handleCartClick} />
 
                 {/* Hamburger Icon untuk Mobile */}
                 <div className={`lg:hidden relative z-50`}>
