@@ -37,6 +37,19 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, [heroContent]);
 
+  const handleButtonClick = () => {
+    const targetElement = document.querySelector("#product-section");
+    if (targetElement) {
+      const offset = 180;
+      const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   if (!heroContent) {
     return <HeroSkeleton />;
   }
@@ -65,7 +78,10 @@ const HeroSection = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
         >
-          <Button className="bg-green-800 text-white py-3 md:py-6 px-4 md:px-6 rounded-md shadow-md hover:bg-green-900">
+          <Button
+            className="bg-green-800 text-white py-3 md:py-6 px-4 md:px-6 rounded-md shadow-md hover:bg-green-900"
+            onClick={handleButtonClick}
+          >
             JELAJAHI SEKARANG!
           </Button>
         </motion.div>

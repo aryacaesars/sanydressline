@@ -5,7 +5,7 @@ import ProductShowcase from "@/components/frontend/ProductShowcase";
 
 export default function Home() {
   return (
-    <div>
+    <div id="home">
       <HeroSection/>
       <ProductShowcase/>
       <AboutSection/>
