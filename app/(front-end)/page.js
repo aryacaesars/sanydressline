@@ -1,19 +1,13 @@
-import { Button } from "@/components/ui/button";
-import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import HeroSection from "@/components/frontend/HeroSection";
-import Products from "../../components/frontend/Product";
 import AboutSection from "@/components/frontend/AboutSection";
+import ProductShowcase from "@/components/frontend/ProductShowcase";
 
 
 export default function Home() {
   return (
-    <div>
-      {/*<h1>Home</h1>*/}
-      {/*<Button>*/}
-      {/*  <LoginLink>Sign in</LoginLink>*/}
-      {/*</Button>*/}
+    <div id="home">
       <HeroSection/>
-      <Products/>
+      <ProductShowcase/>
       <AboutSection/>
     </div>
   );
