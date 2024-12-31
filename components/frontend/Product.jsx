@@ -6,7 +6,7 @@ import { ShoppingCart } from 'lucide-react';
 import Image from 'next/image';
 
 const ProductCard = React.memo(({ product, onAddToCart, onProductClick }) => {
-  const { Image: ProductImage, Name, PriceFormatted, Description, Sizes } = product;
+  const { Image: ProductImage, Name, PriceFormatted, Sizes } = product;
   const totalStock = Sizes.reduce((acc, size) => acc + size.Stock, 0);
 
   const handleAddToCart = () => {
@@ -53,14 +53,6 @@ const ProductCard = React.memo(({ product, onAddToCart, onProductClick }) => {
             >
               <span className="text-xl sm:text-2xl font-bold text-primary">{PriceFormatted}</span>
             </motion.div>
-            <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-                className="text-gray-600 text-xs sm:text-sm mb-2 sm:mb-4 line-clamp-2"
-            >
-              {Description}
-            </motion.p>
             <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
