@@ -66,7 +66,7 @@ export default function DressShowcase() {
     }, []);
 
     return (
-        <div className="min-h-screen py-8 px-4 md:px-10 bg-gray-50">
+        <div id="product" className="min-h-screen py-8 px-4 md:px-10 bg-gray-50">
             <div className="max-w-7xl mx-auto">
                 <div
                     className="flex justify-between items-center mb-6 md:mb-10">
@@ -74,7 +74,7 @@ export default function DressShowcase() {
                         initial={{opacity: 0, y: -20}}
                         animate={{opacity: 1, y: 0}}
                         transition={{duration: 0.5}}
-                        className="text-xl md:text-3xl font-extrabold text-gray-900 text-center md:text-left"
+                        className="text-xl md:text-3xl font-extrabold text-green-900 text-center md:text-left"
                     >
                         Dress Collection
                     </motion.h1>

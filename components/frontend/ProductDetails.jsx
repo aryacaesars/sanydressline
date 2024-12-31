@@ -129,13 +129,13 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                             )}
                             <p className="mb-2"><span className="font-semibold">Category:</span> {Category.Name}</p>
                             <Button
-                                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 mt-auto"
+                                className="w-full bg-primary text-green-900 hover:border-green-900 hover:bg-white mt-auto"
                                 onClick={handleAddToCart}
                             >
                                 <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
                             </Button>
                             {showAlert && (
-                                <Alert className="mt-4" variant="warning">
+                                <Alert className="mt-4 text-green-900" variant="warning">
                                     Please select a size before adding to cart.
                                 </Alert>
                             )}

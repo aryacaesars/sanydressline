@@ -43,8 +43,8 @@ const AboutSection = () => {
     }
 
     return (
-        <section
-            className="container md:px-20 mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-40">
+        <section id="about-us"
+                 className="container md:px-20 mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-40">
             <div className="flex-1 order-2 md:order-1 md:ml-2">
                 <motion.div
                     initial={{opacity: 0, x: 50}}

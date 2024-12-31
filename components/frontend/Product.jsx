@@ -76,7 +76,7 @@ const ProductCard = React.memo(({ product, onAddToCart, onProductClick }) => {
                 whileTap={{ scale: 0.98 }}
                 className="w-full"
             >
-              <Button onClick={handleAddToCart} className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+              <Button onClick={handleAddToCart} className="w-full bg-primary text-green-900 hover:bg-primary/90">
                 <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
               </Button>
             </motion.div>
