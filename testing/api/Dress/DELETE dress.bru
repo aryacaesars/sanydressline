@@ -1,0 +1,102 @@
+meta {
+  name: DELETE dress
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{URL}}/api/dress?DressID=52
+  body: none
+  auth: none
+}
+
+params:query {
+  DressID: 52
+}
+
+docs {
+  ### **Hapus Dress**
+  
+  #### Endpoint
+  
+  **DELETE** `/api/dress`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan penghapusan dress berdasarkan `DressID`. Dress yang dihapus akan menghapus semua gambar terkait dari Cloudinary dan catatan ukuran serta gambar dari database.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `DELETE`  
+  **URL**: `http://localhost:3000/api/dress?DressID=1`
+  
+  > Anda harus menyertakan `DressID` sebagai query parameter dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "message": "Dress berhasil dihapus",
+    "deletedDress": {
+      "DressID": 1,
+      "Name": "Dress 1",
+      "Description": "Deskripsi Dress 1",
+      "Price": 100000,
+      "OrderCount": 5,
+      "IsVisible": true,
+      "CategoryID": 1
+    }
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan `DressID` yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "DressID diperlukan"
+     }
+     ```
+  
+  2. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat menghapus dress atau gambar dari Cloudinary.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kesalahan saat menghapus gambar dari Cloudinary"
+     }
+     ```
+  
+     atau
+  
+     ```json
+     {
+       "error": "Terjadi kesalahan saat menghapus dress"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung pesan sukses", function () {
+    pm.response.to.have.jsonBody("message").that.equals("Dress berhasil dihapus");
+  });
+  pm.test("Respons mengandung dress yang dihapus", function () {
+    pm.response.to.have.jsonBody("deletedDress").that.is.an("object");
+  });
+  ```
+  
+}

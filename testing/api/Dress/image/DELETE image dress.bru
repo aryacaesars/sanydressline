@@ -1,0 +1,95 @@
+meta {
+  name: DELETE image dress
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{URL}}/api/dress/image?DressID=42
+  body: none
+  auth: none
+}
+
+params:query {
+  DressID: 42
+}
+
+docs {
+  ### **Hapus Gambar**
+  
+  #### Endpoint
+  
+  **DELETE** `/api/image`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan penghapusan beberapa gambar berdasarkan `ImageID`. Gambar yang dihapus akan dihapus dari Cloudinary dan catatan gambar akan dihapus dari database.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `DELETE`  
+  **URL**: `http://localhost:3000/api/image?ImageID=1&ImageID=2`
+  
+  > Anda harus menyertakan satu atau lebih `ImageID` sebagai query parameters dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "message": "Gambar berhasil dihapus"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan `ImageID` yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Query parameter ImageID diperlukan"
+     }
+     ```
+  
+  2. **404 Not Found**  
+     Jika satu atau lebih `ImageID` yang diberikan tidak ditemukan.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Gambar tidak ditemukan"
+     }
+     ```
+  
+  3. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat menghapus gambar dari Cloudinary atau database.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kesalahan saat menghapus gambar"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung pesan sukses", function () {
+    pm.response.to.have
+      .jsonBody("message")
+      .that.equals("Gambar berhasil dihapus");
+  });
+  ```
+  
+}

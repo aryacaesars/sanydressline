@@ -21,10 +21,7 @@ export async function DELETE(req) {
     });
 
     if (!image) {
-      return new Response(JSON.stringify({ error: "Image not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json({ error: "Image not found" }, { status: 404 });
     }
 
     // Delete the image from Cloudinary
@@ -35,13 +32,15 @@ export async function DELETE(req) {
       where: { ImageID: parseInt(ImageID) },
     });
 
-    return new Response(null, { status: 204 });
+    return NextResponse.json({ message: "Image deleted" }, { status: 200 });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "Error deleting image" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(
+      {
+        error: error.message || "Error deleting image",
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -61,12 +60,9 @@ export async function POST(req) {
     });
 
     if (!Image) {
-      return new Response(
-        JSON.stringify({ error: "Missing required field: Image" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
+      return NextResponse.json(
+        { error: "Field yang diperlukan hilang: Image" },
+        { status: 400 }
       );
     }
 
@@ -96,15 +92,12 @@ export async function POST(req) {
       },
     });
 
-    return new Response(JSON.stringify(newImage), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(newImage, { status: 201 });
   } catch (error) {
     console.error(error);
-    return new Response(JSON.stringify({ error: "Error uploading image" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(
+      { error: error.message || "Error creating image" },
+      { status: 500 }
+    );
   }
 }

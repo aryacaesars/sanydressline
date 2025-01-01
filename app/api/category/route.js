@@ -5,13 +5,12 @@ const prisma = new PrismaClient();
 
 export async function POST(req) {
   try {
-    const formData = await req.formData();
-    const names = formData.getAll("Name");
+    const { names } = await req.json();
 
     // Utility for input validation
     const validateInput = async (Name) => {
       if (!Name) {
-        throw new Error("Missing required field: Name");
+        throw new Error("Field yang diperlukan hilang: Nama");
       }
 
       // Check if the category name already exists
@@ -19,7 +18,7 @@ export async function POST(req) {
         where: { Name },
       });
       if (existingCategory) {
-        throw new Error(`Category with name "${Name}" already exists`);
+        throw new Error(`Kategori dengan nama "${Name}" sudah ada`);
       }
     };
 
@@ -33,38 +32,27 @@ export async function POST(req) {
       names.map((Name) => prisma.category.create({ data: { Name } }))
     );
 
-    return new Response(JSON.stringify(newCategories), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(newCategories, { status: 201 });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error creating category",
-      }),
+    return NextResponse.json(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+        error: error.message || "Error membuat kategori",
+      },
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(req) {
   try {
-    const url = new URL(req.url);
-    const CategoryID = url.searchParams.get("CategoryID");
-    const formData = await req.formData();
-    const Name = formData.get("Name");
+    const { CategoryID, Name } = await req.json();
 
     // Validate input
     if (!CategoryID || !Name) {
-      return new Response(
-        JSON.stringify({
-          error: "Missing required fields: CategoryID or Name",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        { error: "Field yang diperlukan hilang: CategoryID, Name" },
+        { status: 400 }
       );
     }
 
@@ -74,11 +62,9 @@ export async function PUT(req) {
     });
 
     if (!existingCategory) {
-      return new Response(
-        JSON.stringify({
-          error: `Category with ID "${CategoryID}" does not exist`,
-        }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        { error: "Kategori tidak ditemukan" },
+        { status: 404 }
       );
     }
 
@@ -88,9 +74,9 @@ export async function PUT(req) {
     });
 
     if (nameConflict && nameConflict.CategoryID !== parseInt(CategoryID)) {
-      return new Response(
-        JSON.stringify({ error: `Category name "${Name}" already exists` }),
-        { status: 409, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        { error: `Kategori dengan nama "${Name}" sudah ada` },
+        { status: 409 }
       );
     }
 
@@ -100,20 +86,14 @@ export async function PUT(req) {
       data: { Name },
     });
 
-    return new Response(JSON.stringify(updatedCategory), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(updatedCategory, { status: 200 });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error updating category",
-      }),
+    return NextResponse.json(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+        error: error.message || "Error update kategori",
+      },
+      { status: 500 }
     );
   }
 }
@@ -125,11 +105,9 @@ export async function DELETE(req) {
 
     // Validate query parameter CategoryID
     if (categoryIDs.length === 0) {
-      return new Response(
-        JSON.stringify({
-          error: "At least one CategoryID is required",
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        { error: "Query parameter CategoryID diperlukan" },
+        { status: 400 }
       );
     }
 
@@ -143,11 +121,9 @@ export async function DELETE(req) {
     });
 
     if (existingCategories.length !== categoryIDs.length) {
-      return new Response(
-        JSON.stringify({
-          error: "One or more categories do not exist",
-        }),
-        { status: 404, headers: { "Content-Type": "application/json" } }
+      return NextResponse.json(
+        { error: "Salah satu atau beberapa kategori tidak ditemukan" },
+        { status: 404 }
       );
     }
 
@@ -158,11 +134,11 @@ export async function DELETE(req) {
       });
 
       if (relatedRecords.length > 0) {
-        return new Response(
-          JSON.stringify({
-            error: `Category with ID "${id}" cannot be deleted because it has related records`,
-          }),
-          { status: 409, headers: { "Content-Type": "application/json" } }
+        return NextResponse.json(
+          {
+            error: `Kategori dengan ID ${id} memiliki ${relatedRecords.length} dress terkait`,
+          },
+          { status: 409 }
         );
       }
     }
@@ -176,20 +152,14 @@ export async function DELETE(req) {
       )
     );
 
-    return new Response(JSON.stringify(deletedCategories), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(deletedCategories, { status: 200 });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error deleting categories",
-      }),
+    return NextResponse.json(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+        error: error.message || "Error menghapus kategori",
+      },
+      { status: 500 }
     );
   }
 }
@@ -199,32 +169,31 @@ export async function GET(req) {
     // Mengambil seluruh kategori
     const categories = await prisma.category.findMany({
       include: {
-        Dress: true, // Menyertakan data dress yang terkait dengan kategori
+        Dress: true,
       },
     });
 
-    // Jika tidak ada kategori, kembalikan pesan error
     if (categories.length === 0) {
-      return new Response(JSON.stringify({ error: "No categories found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+        { error: "Kategori tidak ditemukan" },
+        { status: 404 }
+      );
     }
 
-    return new Response(JSON.stringify(categories), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(
+      categories.map((category) => ({
+        ...category,
+        DressCount: category.Dress.length,
+      })),
+      { status: 200 }
+    );
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error retrieving categories",
-      }),
+    return NextResponse.json(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+        error: error.message || "Error mengambil kategori",
+      },
+      { status: 500 }
     );
   }
 }
