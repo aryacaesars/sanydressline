@@ -56,7 +56,7 @@ const Product = () => {
   return (
     <>
       <div className="w-full my-10">
-        <Link href="/dashboard/produk/tambah-produk">
+        <Link href="/app/(dashboard)/produk/tambah-produk">
           <div className="max-w-[220px] shadow-lg rounded-lg overflow-hidden mt-20 mb-10 transition duration-300 hover:scale-105 border-2 hover:shadow-md hover:shadow-green-300">
             <div className="flex justify-center">
               <h3 className="text-xl font-medium text-slate-500">Tambah Produk</h3>
@@ -103,7 +103,7 @@ const Product = () => {
                 >
                   <FaTrashAlt />
                 </button>
-                <Link href={`/dashboard/produk/update-produk?id=${product.DressID}`}>
+                <Link href={`/app/(dashboard)/produk/update-produk?id=${product.DressID}`}>
                   <button
                     className="text-xl text-slate-500 hover:text-green-800 transition-colors"
                     aria-label="Edit Produk"
