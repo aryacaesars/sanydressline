@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import TambahProduk from "@/components/frontend/dashboard/produk/Tambah-Produk";
+import AddProduct from "@/components/dashboard/Product/Add-Product";
 
 export default function Tambah() {
   const { isAuthenticated, isLoading } = useKindeBrowserClient();
@@ -14,7 +14,7 @@ export default function Tambah() {
     <div className="flex flex-col items-center justify-center h-screen">
       Admin content
       <div>
-        <TambahProduk />
+        <AddProduct />
       </div>
       <Button>
         <LogoutLink>Sign out</LogoutLink>

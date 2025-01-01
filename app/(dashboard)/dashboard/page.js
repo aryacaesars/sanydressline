@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import HeroForm from "@/components/dashboard/HeroForm";
-import ProductForm from "@/components/dashboard/ProductForm";
+import ProductForm from "@/components/dashboard/Product/Add-Product";
 import AboutForm from "@/components/dashboard/AboutForm";
 
 export default function Admin() {

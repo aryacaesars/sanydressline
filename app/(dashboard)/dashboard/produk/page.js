@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import { LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
-import Produk from "@/components/frontend/dashboard/produk/Produk";
+import Product from "@/components/dashboard/Product/Product";
 
 export default function AdminProduk() {
   const { isAuthenticated, isLoading } = useKindeBrowserClient();
@@ -14,7 +14,7 @@ export default function AdminProduk() {
     <div className="flex flex-col items-center justify-center h-screen">
       Admin content
       <div>
-        <Produk />
+        <Product />
       </div>
       <Button>
         <LogoutLink>Sign out</LogoutLink>
