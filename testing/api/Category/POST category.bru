@@ -1,0 +1,92 @@
+meta {
+  name: POST category
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}/api/category
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "names": [
+      "Category1",
+      "Category2"
+    ]
+  }
+}
+
+docs {
+  ### **Buat Kategori Baru**
+  
+  #### Endpoint
+  
+  **POST** `/api/category`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pembuatan beberapa kategori sekaligus. Nama kategori harus unik dan tidak boleh kosong. Jika ada nama kategori yang sudah ada, permintaan akan gagal.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `POST`  
+  **URL**: `http://localhost:3000/api/category`  
+  **Header**:
+  
+  - `Content-Type: application/json`
+  
+  **Body** (JSON):
+  
+  ```json
+  {
+    "names": ["Kategori 1", "Kategori 2"]
+  }
+  ```
+  
+  > Anda bisa menambahkan beberapa nama kategori dalam array `names` untuk membuat beberapa kategori sekaligus.
+  
+  #### Respons
+  
+  **Kode Status**: `201 Created`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  [
+    { "id": 1, "Name": "Kategori 1" },
+    { "id": 2, "Name": "Kategori 2" }
+  ]
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan field `Name` yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Field yang diperlukan hilang: Nama"
+     }
+     ```
+  
+  2. **409 Conflict**  
+     Jika ada nama kategori yang sudah ada.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kategori dengan nama \"kategori 1\" sudah ada"
+     }
+     ```
+  
+}

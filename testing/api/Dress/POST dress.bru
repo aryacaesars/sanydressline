@@ -1,0 +1,138 @@
+meta {
+  name: POST dress
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{URL}}/api/dress
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  Name: Dress Name
+  Description: Dress Description
+  Price: 100000
+  OrderCount: 3
+  IsVisible: true
+  CategoryID: 10
+  Sizes: [{"Size": "S", "Stock": 10}, {"Size": "M", "Stock": 15}, {"Size": "XL", "Stock": 5}]
+  Image: @file(/home/padil/Pictures/Screenshots/Screenshot from 2024-12-25 15-37-55.png)
+  ~Image: @file()
+  ~Image: @file()
+}
+
+docs {
+  ### **Buat Dress Baru**
+  
+  #### Endpoint
+  
+  **POST** `/api/dress`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pembuatan dress baru dengan mengunggah gambar ke Cloudinary dan menyimpan informasi dress, termasuk kategori, ukuran, dan visibilitas.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `POST`  
+  **URL**: `http://localhost:3000/api/dress`  
+  **Header**:
+  
+  - `Content-Type: multipart/form-data`
+  
+  **Body** (form-data):
+  
+  - **Image**: [File] (Anda dapat mengunggah beberapa file gambar)
+  - **Name**: [String] Nama dress
+  - **Description**: [String] Deskripsi dress
+  - **Price**: [Number] Harga dress
+  - **OrderCount**: [Number] Jumlah pesanan
+  - **IsVisible**: [Boolean] Apakah dress terlihat di katalog
+  - **CategoryID**: [Number] ID kategori
+  - **Sizes**: [JSON String] Ukuran dan stok dalam format JSON, misalnya:
+    ```json
+    [
+      { "Size": "S", "Stock": 10 },
+      { "Size": "M", "Stock": 15 }
+    ]
+    ```
+  
+  #### Respons
+  
+  **Kode Status**: `201 Created`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "DressID": 1,
+    "Name": "Dress Baru",
+    "Description": "Deskripsi Dress Baru",
+    "Price": 100000,
+    "OrderCount": 5,
+    "IsVisible": true,
+    "Category": {
+      "CategoryID": 1,
+      "Name": "Kategori 1"
+    },
+    "Sizes": [
+      {
+        "SizeID": 1,
+        "Size": "S",
+        "Stock": 10
+      }
+    ],
+    "Images": [
+      {
+        "ImageID": 1,
+        "PublicID": "public_id_1",
+        "Url": "http://example.com/image1.jpg",
+        "Alt": "Dress Baru - Image 1"
+      }
+    ]
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+      Jika permintaan tidak menyertakan field yang wajib.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Field yang diperlukan tidak lengkap"
+      }
+      ```
+      
+  2. **500 Internal Server Error**  
+      Jika terjadi kesalahan saat membuat dress.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Terjadi kesalahan saat membuat dress"
+      }
+      ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 201", function () {
+    pm.response.to.have.status(201);
+  });
+  pm.test("Respons mengandung dress yang dibuat", function () {
+    pm.response.to.have.jsonBody("DressID").that.is.a("number");
+    pm.response.to.have.jsonBody("Name").that.equals("Dress Baru");
+  });
+  ```
+  
+}

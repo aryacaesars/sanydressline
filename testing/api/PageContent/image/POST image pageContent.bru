@@ -1,0 +1,102 @@
+meta {
+  name: POST image pageContent
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}/api/page-content/image?ContentID=1
+  body: multipartForm
+  auth: none
+}
+
+params:query {
+  ContentID: 1
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  Image: @file()
+}
+
+docs {
+  ### **Tambahkan Gambar ke Konten Halaman**
+  
+  #### Endpoint
+  
+  **POST** `/api/page-content/image`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan penambahan gambar ke konten halaman yang ada berdasarkan `ContentID`. Gambar akan diunggah ke Cloudinary dan catatan gambar akan disimpan di database.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `POST`  
+  **URL**: `http://localhost:3000/api/page-content/image?ContentID=1`  
+  **Header**:
+  
+  - `Content-Type: multipart/form-data`
+  
+  **Body** (form-data):
+  
+  - **Image**: [File] Gambar yang akan diunggah
+  
+  > Anda harus menyertakan `ContentID` sebagai query parameter dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `201 Created`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "ImageID": 1,
+    "ContentID": 1,
+    "PublicID": "public_id_1",
+    "Url": "http://example.com/image1.jpg",
+    "Alt": "header - Image 1"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+      Jika permintaan tidak menyertakan `Image` yang wajib.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Field yang diperlukan hilang: Image"
+      }
+      ```
+      
+  2. **500 Internal Server Error**  
+      Jika terjadi kesalahan saat menambahkan gambar atau mengunggah ke Cloudinary.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Error creating image"
+      }
+      ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 201", function () {
+    pm.response.to.have.status(201);
+  });
+  pm.test("Respons mengandung detail gambar yang dibuat", function () {
+    pm.response.to.have.jsonBody("ImageID").that.is.a("number");
+    pm.response.to.have.jsonBody("Url").that.is.a("string");
+  });
+  ```
+  
+}

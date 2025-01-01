@@ -1,0 +1,99 @@
+meta {
+  name: POST image dress
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{URL}}/api/dress/image?DressID=42
+  body: multipartForm
+  auth: none
+}
+
+params:query {
+  DressID: 42
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  Image: @file(/home/padil/Pictures/Screenshots/Screenshot from 2024-12-25 15-37-55.png)
+}
+
+docs {
+  ### **Tambahkan Gambar ke Dress**
+  
+  #### Endpoint
+  
+  **POST** `/api/dress/image`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan penambahan gambar ke dress yang ada berdasarkan `DressID`. Gambar akan diunggah ke Cloudinary dan catatan gambar akan disimpan di database.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `POST`  
+  **URL**: `http://localhost:3000/api/dress/image?DressID=1`  
+  **Header**:
+  
+  - `Content-Type: multipart/form-data`
+  
+  **Body** (form-data):
+  
+  - **Image**: [File] (Anda dapat mengunggah beberapa file gambar)
+  
+  > Anda harus menyertakan `DressID` sebagai query parameter dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "message": "Gambar berhasil ditambahkan"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan `DressID` yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "DressID diperlukan"
+     }
+     ```
+  
+  2. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat menambahkan gambar atau mengunggah ke Cloudinary.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Terjadi kesalahan saat menambahkan gambar"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung pesan sukses", function () {
+    pm.response.to.have
+      .jsonBody("message")
+      .that.equals("Gambar berhasil ditambahkan");
+  });
+  ```
+  
+}

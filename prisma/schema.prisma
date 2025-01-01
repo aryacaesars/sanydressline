@@ -21,6 +21,7 @@ model Dress {
   Description String
   Price       Decimal
   OrderCount  Int
+  IsVisible   Boolean  @default(true)
   CreatedAt   DateTime @default(now())
   UpdatedAt   DateTime @updatedAt
   CategoryID  Int

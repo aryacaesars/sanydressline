@@ -16,12 +16,9 @@ export async function GET(req) {
     const pageName = searchParams.get("pageName");
 
     if (!pageName) {
-      return new Response(
-        JSON.stringify({ error: "Missing pageName query parameter" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
+      return NextResponse.json(
+        { error: "Parameter query yang diperlukan hilang: pageName" },
+        { status: 400 }
       );
     }
 
@@ -29,18 +26,14 @@ export async function GET(req) {
       where: { PageName: pageName },
     });
 
-    return new Response(JSON.stringify(contents), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(contents, { status: 200 });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({ error: "Error fetching page content" }),
+    return NextResponse.json(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+        error: error.message || "Terjadi kesalahan saat mengambil data konten",
+      },
+      { status: 500 }
     );
   }
 }
@@ -188,29 +181,19 @@ export async function PATCH(req) {
 
     // Validate query parameter ContentID
     if (!ContentID) {
-      return new Response(
-        JSON.stringify({
-          error: "Missing required query parameter: ContentID",
-        }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
+      return NextResponse.json(
+        { error: "Missing required query parameter: ContentID" },
+        { status: 400 }
       );
     }
 
-    const formData = await req.formData();
-    const Title = formData.get("Title");
-    const Paragraph = formData.get("Paragraph");
+    const { Title, Paragraph } = await req.json();
 
     // Validate body to ensure all required fields are present
     if (!Title || !Paragraph) {
-      return new Response(
-        JSON.stringify({ error: "Missing required fields in form data" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
+      return NextResponse.json(
+        { error: "Missing required fields: Title, Paragraph" },
+        { status: 400 }
       );
     }
 
@@ -220,12 +203,9 @@ export async function PATCH(req) {
     });
 
     if (!existingContent) {
-      return new Response(
-        JSON.stringify({ error: "ContentID not found in database" }),
-        {
-          status: 404,
-          headers: { "Content-Type": "application/json" },
-        }
+      return NextResponse.json(
+        { error: "ContentID not found in database" },
+        { status: 404 }
       );
     }
 
@@ -240,21 +220,14 @@ export async function PATCH(req) {
       data: content,
     });
 
-    return new Response(JSON.stringify(updatedContent), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
+    return NextResponse.json(updatedContent, { status: 200 });
   } catch (error) {
     console.error("Error Details:", error);
-    return new Response(
-      JSON.stringify({
-        error: "Error updating page content",
-        details: error.message,
-      }),
+    return NextResponse.json(
       {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+        error: error.message || "Error updating page content",
+      },
+      { status: 500 }
     );
   }
 }

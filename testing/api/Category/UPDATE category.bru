@@ -1,0 +1,114 @@
+meta {
+  name: UPDATE category
+  type: http
+  seq: 2
+}
+
+put {
+  url: {{URL}}/api/category
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "CategoryID": 20,
+    "Name": "Updated Category"
+  }
+}
+
+docs {
+  ### **Perbarui Kategori**
+  
+  #### Endpoint
+  
+  **PUT** `/api/category`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pembaruan kategori yang ada berdasarkan `CategoryID`. Nama kategori harus unik dan tidak boleh kosong. Jika `CategoryID` tidak ditemukan atau nama kategori sudah ada, permintaan akan gagal.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `PUT`  
+  **URL**: `http://localhost:3000/api/category`  
+  **Header**:
+  
+  - `Content-Type: application/json`
+  
+  **Body** (JSON):
+  
+  ```json
+  {
+    "CategoryID": 1,
+    "Name": "Updated Category"
+  }
+  ```
+  
+  > Anda harus menyertakan `CategoryID` dan `Name` dalam body permintaan.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "CategoryID": 1,
+    "Name": "Updated Category"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan field `CategoryID` atau `Name` yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Field yang diperlukan hilang: CategoryID, Name"
+     }
+     ```
+  
+  2. **404 Not Found**  
+     Jika `CategoryID` yang diberikan tidak ditemukan.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kategori tidak ditemukan"
+     }
+     ```
+  
+  3. **409 Conflict**  
+     Jika nama kategori yang diberikan sudah ada.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kategori dengan nama \"Updated Category\" sudah ada"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung kategori yang diperbarui", function () {
+    pm.response.to.have.jsonBody("CategoryID").that.equals(1);
+    pm.response.to.have.jsonBody("Name").that.equals("Updated Category");
+  });
+  ```
+  
+}

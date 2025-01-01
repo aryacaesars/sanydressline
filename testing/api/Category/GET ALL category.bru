@@ -1,0 +1,85 @@
+meta {
+  name: GET ALL category
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{URL}}/api/category
+  body: none
+  auth: none
+}
+
+docs {
+  ### **Ambil Seluruh Kategori**
+  
+  #### Endpoint
+  
+  **GET** `/api/category`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pengambilan seluruh kategori yang ada. Setiap kategori akan menyertakan jumlah dress yang terkait.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `GET`  
+  **URL**: `http://localhost:3000/api/category`
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  [
+    {
+      "CategoryID": 1,
+      "Name": "Kategori 1",
+      "DressCount": 5
+    },
+    {
+      "CategoryID": 2,
+      "Name": "Kategori 2",
+      "DressCount": 3
+    }
+  ]
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **404 Not Found**  
+     Jika tidak ada kategori yang ditemukan.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kategori tidak ditemukan"
+     }
+     ```
+  
+  2. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat mengambil kategori.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Error mengambil kategori"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung daftar kategori", function () {
+    pm.response.to.have.jsonBody("length").that.is.above(0);
+  });
+  ```
+  
+}

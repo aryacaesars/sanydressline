@@ -1,0 +1,82 @@
+meta {
+  name: DELETE image pageContent
+  type: http
+  seq: 2
+}
+
+delete {
+  url: {{URL}}/api/image?ImageID=1
+  body: none
+  auth: none
+}
+
+params:query {
+  ImageID: 1
+}
+
+docs {
+  ### **Hapus Gambar**
+  
+  #### Endpoint
+  
+  **DELETE** `/api/image`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan penghapusan gambar berdasarkan `ImageID`. Gambar yang dihapus akan dihapus dari Cloudinary dan catatan gambar akan dihapus dari database.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `DELETE`  
+  **URL**: `http://localhost:3000/api/image?ImageID=1`
+  
+  > Anda harus menyertakan `ImageID` sebagai query parameter dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "message": "Image deleted"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **404 Not Found**  
+      Jika `ImageID` yang diberikan tidak ditemukan di database.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Image not found"
+      }
+      ```
+      
+  2. **500 Internal Server Error**  
+      Jika terjadi kesalahan saat menghapus gambar dari Cloudinary atau database.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Error deleting image"
+      }
+      ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung pesan sukses", function () {
+    pm.response.to.have.jsonBody("message").that.equals("Image deleted");
+  });
+  ```
+  
+}
