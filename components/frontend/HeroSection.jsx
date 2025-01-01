@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { CldImage } from "next-cloudinary";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import HeroSkeleton from "@/components/frontend/skeleton/HeroSkeleton";
 
 const HeroSection = () => {
   const [heroContent, setHeroContent] = useState(null);
@@ -36,12 +37,25 @@ const HeroSection = () => {
     return () => clearInterval(interval);
   }, [heroContent]);
 
+  const handleButtonClick = () => {
+    const targetElement = document.querySelector("#product-section");
+    if (targetElement) {
+      const offset = 180;
+      const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   if (!heroContent) {
-    return <div>Loading...</div>;
+    return <HeroSkeleton />;
   }
 
   return (
-    <section className="container max-w-7xl min-h-screen mx-auto my-24 md:my-10 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-40 overflow-hidden">
+    <section className="container max-w-7xl min-h-screen mx-auto my-16 md:my-16 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-40 overflow-hidden">
       <div className="flex-1">
         <motion.h1
           className="text-2xl md:text-4xl font-bold text-green-800 leading-snug mb-4"
@@ -64,7 +78,10 @@ const HeroSection = () => {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.9, ease: "easeOut" }}
         >
-          <Button className="bg-green-800 text-white py-3 md:py-6 px-4 md:px-6 rounded-md shadow-md hover:bg-green-900">
+          <Button
+            className="bg-green-800 text-white py-3 md:py-6 px-4 md:px-6 rounded-md shadow-md hover:bg-green-900"
+            onClick={handleButtonClick}
+          >
             JELAJAHI SEKARANG!
           </Button>
         </motion.div>

@@ -5,20 +5,23 @@ import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import CartIcon from "@/components/frontend/CartIcon";
+import { useCart } from "@/context/CartContext";
 import logo from '../../public/logo.svg';
 
-const Navbar = ({ cart = [] }) => {
+const Navbar = () => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { cartItems } = useCart();
     const router = useRouter();
+    const pathname = usePathname();
 
     const menuItems = [
-        { name: "Beranda", href: "#" },
-        { name: "Produk", href: "#produk" },
-        { name: "Tentang Kami", href: "#tentang-kami" },
-        { name: "Kontak", href: "#kontak" },
+        { name: "Beranda", href: "#home" },
+        { name: "Produk", href: "#product-section" },
+        { name: "Tentang Kami", href: "#about-us" },
+        { name: "Kontak", href: "#contact" },
     ];
 
     useEffect(() => {
@@ -33,6 +36,25 @@ const Navbar = ({ cart = [] }) => {
 
     const handleCartClick = () => {
         router.push('/checkout');
+    };
+
+    const handleLinkClick = (e, href) => {
+        e.preventDefault();
+        if (pathname === '/checkout') {
+            router.push(`/${href}`);
+        } else {
+            const targetElement = document.querySelector(href);
+            if (targetElement) {
+                const offset = 180;
+                const elementPosition = targetElement.getBoundingClientRect().top + window.pageYOffset;
+                const offsetPosition = elementPosition - offset;
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        }
+        setIsMenuOpen(false);
     };
 
     return (
@@ -50,16 +72,16 @@ const Navbar = ({ cart = [] }) => {
                 {/* Menu untuk Desktop */}
                 <div className="hidden lg:flex items-center space-x-8">
                     {menuItems.map((item, index) => (
-                        <Link key={index} href={item.href}>
+                        <a key={index} href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
                             <p className="relative text-gray-700 hover:text-green-700 transition-all duration-300 after:content-[''] after:block after:h-[2px] after:bg-green-700 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">
                                 {item.name}
                             </p>
-                        </Link>
+                        </a>
                     ))}
                 </div>
 
                 {/* Cart Icon */}
-                <CartIcon itemCount={cart.length} onClick={handleCartClick} />
+                <CartIcon itemCount={cartItems.length} onClick={handleCartClick} />
 
                 {/* Hamburger Icon untuk Mobile */}
                 <div className={`lg:hidden relative z-50`}>
@@ -88,11 +110,11 @@ const Navbar = ({ cart = [] }) => {
                                 </div>
 
                                 {menuItems.map((item, index) => (
-                                    <Link key={index} href={item.href}>
+                                    <a key={index} href={item.href} onClick={(e) => handleLinkClick(e, item.href)}>
                                         <p className="text-gray-700 hover:text-green-700 transition-all duration-300 w-full text-center">
                                             {item.name}
                                         </p>
-                                    </Link>
+                                    </a>
                                 ))}
                             </div>
                         </motion.div>

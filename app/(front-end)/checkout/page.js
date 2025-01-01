@@ -1,22 +1,48 @@
-// app/(front-end)/checkout/page.js
-'use client'
-
-import React from 'react';
+"use client"
+import React, { useCallback, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from "@/components/ui/button";
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/context/CartContext';
-import { FaPlus, FaMinus, FaTrash } from 'react-icons/fa';
+import { AiOutlinePlus, AiOutlineMinus, AiOutlineDelete } from 'react-icons/ai';
+import { toast } from 'sonner';
 
-export default function Checkout() {
+const Checkout = React.memo(() => {
     const router = useRouter();
     const { cartItems, increaseQuantity, decreaseQuantity, removeFromCart } = useCart();
 
-    const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const handleIncreaseQuantity = useCallback((item) => {
+        const stock = item.Sizes.find(size => size.SizeID === item.selectedSize).Stock;
+        if (item.quantity < stock) {
+            increaseQuantity(item.id);
+        } else {
+            toast("Cannot increase quantity", { description: "Quantity exceeds available stock" });
+        }
+    }, [increaseQuantity]);
+
+    const handleDecreaseQuantity = useCallback((item) => {
+        if (item.quantity > 1) {
+            decreaseQuantity(item.id);
+        } else {
+            toast("Cannot decrease quantity", { description: "Quantity cannot be less than 1" });
+        }
+    }, [decreaseQuantity]);
+
+    const handleRemoveFromCart = useCallback((id, name) => {
+        removeFromCart(id);
+        toast("Item removed", { description: `Removed ${name} from cart` });
+    }, [removeFromCart]);
+
+    const total = useMemo(() => {
+        return cartItems.reduce((sum, item) => {
+            const itemPrice = parseFloat(item.PriceFormatted.replace(/[^0-9,-]+/g, "").replace(",", "."));
+            return sum + (itemPrice * item.quantity);
+        }, 0);
+    }, [cartItems]);
 
     return (
-        <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl my-20 mx-auto rounded-lg shadow-xl p-8">
+        <div className="min-h-screen py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
+            <div className="max-w-3xl my-20 mx-auto rounded-lg shadow-xl p-8 bg-white">
                 <motion.h1
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -28,29 +54,45 @@ export default function Checkout() {
                 <div className="space-y-6">
                     {cartItems.map((item) => (
                         <motion.div
-                            key={item.id}
+                            key={item.DressID}
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ duration: 0.5 }}
                             className="flex justify-between items-center border-b pb-4"
                         >
-                            <div>
-                                <h2 className="font-semibold">{item.title}</h2>
-                                <p className="text-gray-600">Quantity: {item.quantity}</p>
-                                <div className="flex items-center space-x-2">
-                                    <Button onClick={() => decreaseQuantity(item.id)} className="flex items-center justify-center p-2">
-                                        <FaMinus />
-                                    </Button>
-                                    <Button onClick={() => increaseQuantity(item.id)} className="flex items-center justify-center p-2">
-                                        <FaPlus />
-                                    </Button>
+                            <div className="flex items-center gap-4">
+                                <img src={item.Image[0]?.Url} alt={item.Name} className="w-20 h-20 object-cover rounded-lg" />
+                                <div>
+                                    <h2 className="font-semibold text-lg">{item.Name}</h2>
+                                    <p className="text-gray-600">Size: {item.Sizes.find(size => size.SizeID === item.selectedSize).Size}</p>
+                                    <div className="flex items-center mt-2 space-x-2">
+                                        <div className="flex items-center border rounded-md">
+                                            <button
+                                                onClick={() => handleDecreaseQuantity(item)}
+                                                className={`p-3 w-10 h-10 text-center text-lg text-gray-700 border-r hover:bg-gray-100 ${item.quantity <= 1 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                                disabled={item.quantity <= 1}
+                                            >
+                                                <AiOutlineMinus />
+                                            </button>
+                                            <span className="px-4 text-lg font-medium">{item.quantity}</span>
+                                            <button
+                                                onClick={() => handleIncreaseQuantity(item)}
+                                                className="p-3 w-10 h-10 text-center text-lg text-gray-700 border-l hover:bg-gray-100"
+                                            >
+                                                <AiOutlinePlus />
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-4">
-                                <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
-                                <Button onClick={() => removeFromCart(item.id)} className="text-red-500 flex items-center justify-center p-2">
-                                    <FaTrash />
-                                </Button>
+                            <div className="flex items-center gap-4">
+                                <p className="font-semibold text-lg">{item.PriceFormatted}</p>
+                                <button
+                                    onClick={() => handleRemoveFromCart(item.id, item.Name)}
+                                    className="p-3 w-10 h-10 text-center text-lg text-gray-700 border rounded-md hover:bg-gray-100 flex items-center justify-center"
+                                >
+                                    <AiOutlineDelete />
+                                </button>
                             </div>
                         </motion.div>
                     ))}
@@ -61,7 +103,7 @@ export default function Checkout() {
                         className="flex justify-between items-center pt-4"
                     >
                         <h2 className="text-xl font-bold">Total:</h2>
-                        <p className="text-xl font-bold">${total.toFixed(2)}</p>
+                        <p className="text-xl font-bold">Rp {total.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                     </motion.div>
                 </div>
                 <motion.div
@@ -70,12 +112,12 @@ export default function Checkout() {
                     transition={{ delay: 0.7, duration: 0.5 }}
                     className="mt-8 space-y-4"
                 >
-                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90">
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-3 rounded-lg">
                         Proceed to Payment
                     </Button>
                     <Button
                         variant="outline"
-                        className="w-full"
+                        className="w-full py-3 rounded-lg"
                         onClick={() => router.push('/')}
                     >
                         Continue Shopping
@@ -84,4 +126,6 @@ export default function Checkout() {
             </div>
         </div>
     );
-}
+});
+
+export default Checkout;
