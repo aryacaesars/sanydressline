@@ -85,12 +85,11 @@ export async function POST(req) {
 
 export async function DELETE(req) {
   try {
-    const url = new URL(req.url);
-    const imageIDs = url.searchParams.getAll("ImageID");
+    const { imageIDs } = await req.json();
 
-    if (imageIDs.length === 0) {
+    if (!imageIDs || imageIDs.length === 0) {
       return NextResponse.json(
-        { error: "Query parameter ImageID diperlukan" },
+        { error: "Field imageIDs diperlukan" },
         { status: 400 }
       );
     }

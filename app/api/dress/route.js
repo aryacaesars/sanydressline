@@ -106,7 +106,7 @@ export async function POST(req) {
         Sizes: {
           create: Sizes.map((size) => ({
             Size: size.Size,
-            Stock: size.Stock,
+            Stock: parseInt(size.Stock),
           })),
         },
       },
@@ -312,7 +312,7 @@ export async function PUT(req) {
           deleteMany: {},
           create: Sizes.map((size) => ({
             Size: size.Size,
-            Stock: size.Stock,
+            Stock: parseInt(size.Stock),
           })),
         },
       },
