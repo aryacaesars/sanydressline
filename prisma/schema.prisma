@@ -59,7 +59,6 @@ model PageContent {
   Section   String
   Title     String
   Paragraph String
-  Img       Json
   Images    Image[]
   UpdatedAt DateTime @updatedAt
 }

@@ -15,22 +15,30 @@ params:query {
 }
 
 docs {
-  ### **Hapus Dress**
+  ### **Hapus Gambar**
   
   #### Endpoint
   
-  **DELETE** `/api/dress`
+  **DELETE** `/api/image`
   
   #### Deskripsi
   
-  Endpoint ini memungkinkan penghapusan dress berdasarkan `DressID`. Dress yang dihapus akan menghapus semua gambar terkait dari Cloudinary dan catatan ukuran serta gambar dari database.
+  Endpoint ini memungkinkan penghapusan gambar berdasarkan `imageIDs`. Gambar yang dihapus akan dihapus dari Cloudinary dan catatan gambar dari database.
   
   #### Permintaan (Request)
   
   **Metode**: `DELETE`  
-  **URL**: `http://localhost:3000/api/dress?DressID=1`
+  **URL**: `http://localhost:3000/api/image`
   
-  > Anda harus menyertakan `DressID` sebagai query parameter dalam URL.
+  **Body** (JSON):
+  
+  ```json
+  {
+    "imageIDs": [1, 2, 3]
+  }
+  ```
+  
+  > Anda harus menyertakan `imageIDs` dalam body permintaan.
   
   #### Respons
   
@@ -40,40 +48,42 @@ docs {
   
   ```json
   {
-    "message": "Dress berhasil dihapus",
-    "deletedDress": {
-      "DressID": 1,
-      "Name": "Dress 1",
-      "Description": "Deskripsi Dress 1",
-      "Price": 100000,
-      "OrderCount": 5,
-      "IsVisible": true,
-      "CategoryID": 1
-    }
+    "message": "Gambar berhasil dihapus"
   }
   ```
   
   #### Respons Kesalahan (Error Responses)
   
   1. **400 Bad Request**  
-     Jika permintaan tidak menyertakan `DressID` yang wajib.
+     Jika permintaan tidak menyertakan `imageIDs` yang wajib.
   
      **Body Respons**:
   
      ```json
      {
-       "error": "DressID diperlukan"
+       "error": "Field imageIDs diperlukan"
      }
      ```
   
-  2. **500 Internal Server Error**  
-     Jika terjadi kesalahan saat menghapus dress atau gambar dari Cloudinary.
+  2. **404 Not Found**  
+     Jika satu atau lebih `imageIDs` yang diberikan tidak ditemukan.
   
      **Body Respons**:
   
      ```json
      {
-       "error": "Kesalahan saat menghapus gambar dari Cloudinary"
+       "error": "Gambar tidak ditemukan"
+     }
+     ```
+  
+  3. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat menghapus gambar dari Cloudinary atau database.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kesalahan saat menghapus gambar"
      }
      ```
   
@@ -81,7 +91,7 @@ docs {
   
      ```json
      {
-       "error": "Terjadi kesalahan saat menghapus dress"
+       "error": "Terjadi kesalahan saat menghapus gambar"
      }
      ```
   
@@ -92,10 +102,9 @@ docs {
     pm.response.to.have.status(200);
   });
   pm.test("Respons mengandung pesan sukses", function () {
-    pm.response.to.have.jsonBody("message").that.equals("Dress berhasil dihapus");
-  });
-  pm.test("Respons mengandung dress yang dihapus", function () {
-    pm.response.to.have.jsonBody("deletedDress").that.is.an("object");
+    pm.response.to.have
+      .jsonBody("message")
+      .that.equals("Gambar berhasil dihapus");
   });
   ```
   

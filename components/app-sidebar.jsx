@@ -36,17 +36,17 @@ export function AppSidebar({ ...props }) {
     navMain: [
       {
         title: "Page Content",
-        url: "/page-content",
+        url: "/dashboard/page-content",
         icon: SquareTerminal,
         isActive: true,
         items: [
           {
-            title: "Hero Content",
-            url: "/hero-content",
+            title: "Add Content",
+            url: "/dashboard/page-content/add",
           },
           {
-            title: "About Content",
-            url: "/about-content",
+            title: "List Content",
+            url: "/dashboard/page-content/list",
           },
         ],
       },
