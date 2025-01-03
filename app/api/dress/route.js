@@ -24,22 +24,22 @@ export async function POST(req) {
 
     // Utility untuk validasi input
     const validateInput = async ({
-      Name,
-      Description,
-      Price,
-      OrderCount,
-      IsVisible,
-      CategoryID,
-      Sizes,
-    }) => {
+                                   Name,
+                                   Description,
+                                   Price,
+                                   OrderCount,
+                                   IsVisible,
+                                   CategoryID,
+                                   Sizes,
+                                 }) => {
       if (
-        !Name ||
-        !Description ||
-        !Price ||
-        !OrderCount ||
-        !IsVisible ||
-        !CategoryID ||
-        !Sizes
+          !Name ||
+          !Description ||
+          !Price ||
+          !OrderCount ||
+          !IsVisible ||
+          !CategoryID ||
+          !Sizes
       ) {
         throw new Error("Field yang diperlukan tidak lengkap");
       }
@@ -69,14 +69,14 @@ export async function POST(req) {
       const buffer = Buffer.from(await Image.arrayBuffer());
       const uploadResponse = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "sanydressline" }, // Optional: specify a folder in Cloudinary
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
+            { folder: "sanydressline" }, // Optional: specify a folder in Cloudinary
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
             }
-          }
         );
         uploadStream.end(buffer);
       });
@@ -132,10 +132,10 @@ export async function POST(req) {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      {
-        error: error.message || "Terjadi kesalahan saat membuat dress",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Terjadi kesalahan saat membuat dress",
+        },
+        { status: 500 }
     );
   }
 }
@@ -164,10 +164,10 @@ export async function GET() {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      {
-        error: error.message || "Error retrieving dresses",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Error retrieving dresses",
+        },
+        { status: 500 }
     );
   }
 }
@@ -179,8 +179,8 @@ export async function DELETE(req) {
 
     if (!dressID) {
       return NextResponse.json(
-        { error: "DressID diperlukan" },
-        { status: 400 }
+          { error: "DressID diperlukan" },
+          { status: 400 }
       );
     }
 
@@ -202,14 +202,14 @@ export async function DELETE(req) {
         await cloudinary.uploader.destroy(image.PublicID);
       } catch (error) {
         console.error(
-          "Kesalahan saat menghapus gambar dari Cloudinary:",
-          error
+            "Kesalahan saat menghapus gambar dari Cloudinary:",
+            error
         );
         return NextResponse.json(
-          {
-            error: "Kesalahan saat menghapus gambar dari Cloudinary",
-          },
-          { status: 500 }
+            {
+              error: "Kesalahan saat menghapus gambar dari Cloudinary",
+            },
+            { status: 500 }
         );
       }
     }
@@ -229,8 +229,8 @@ export async function DELETE(req) {
     });
 
     return NextResponse.json(
-      { message: "Dress berhasil dihapus", deletedDress },
-      { status: 200 }
+        { message: "Dress berhasil dihapus", deletedDress },
+        { status: 200 }
     );
   } catch (error) {
     if (error instanceof Error) {
@@ -238,10 +238,10 @@ export async function DELETE(req) {
     }
     console.error(error || "Kesalahan tidak diketahui");
     return NextResponse.json(
-      {
-        error: error.message || "Terjadi kesalahan saat menghapus dress",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Terjadi kesalahan saat menghapus dress",
+        },
+        { status: 500 }
     );
   }
 }
@@ -253,8 +253,8 @@ export async function PUT(req) {
 
     if (!dressID) {
       return NextResponse.json(
-        { error: "DressID is required" },
-        { status: 400 }
+          { error: "DressID is required" },
+          { status: 400 }
       );
     }
 
@@ -269,26 +269,26 @@ export async function PUT(req) {
 
     // Validate input
     if (
-      !Name ||
-      !Description ||
-      !Price ||
-      !OrderCount ||
-      !IsVisible ||
-      !CategoryID ||
-      !Sizes ||
-      !Array.isArray(Sizes)
+        !Name ||
+        !Description ||
+        !Price ||
+        !OrderCount ||
+        !IsVisible ||
+        !CategoryID ||
+        !Sizes ||
+        !Array.isArray(Sizes)
     ) {
       return NextResponse.json(
-        { error: "Field yang diperlukan tidak lengkap" },
-        { status: 400 }
+          { error: "Field yang diperlukan tidak lengkap" },
+          { status: 400 }
       );
     }
 
     for (const size of Sizes) {
       if (!size.Size || size.Stock == null) {
         return NextResponse.json(
-          { error: "Ukuran atau stok untuk setiap ukuran tidak lengkap" },
-          { status: 400 }
+            { error: "Ukuran atau stok untuk setiap ukuran tidak lengkap" },
+            { status: 400 }
         );
       }
     }
@@ -339,16 +339,16 @@ export async function PUT(req) {
 
     if (error.code === "P2025") {
       return NextResponse.json(
-        { error: "Dress tidak ditemukan" },
-        { status: 404 }
+          { error: "Dress tidak ditemukan" },
+          { status: 404 }
       );
     }
 
     return NextResponse.json(
-      {
-        error: error.message || "Terjadi kesalahan saat memperbarui dress",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Terjadi kesalahan saat memperbarui dress",
+        },
+        { status: 500 }
     );
   }
 }

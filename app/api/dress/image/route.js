@@ -19,8 +19,8 @@ export async function POST(req) {
 
     if (!dressID) {
       return NextResponse.json(
-        { error: "DressID diperlukan" },
-        { status: 400 }
+          { error: "DressID diperlukan" },
+          { status: 400 }
       );
     }
 
@@ -40,14 +40,14 @@ export async function POST(req) {
       const buffer = Buffer.from(await image.arrayBuffer());
       const uploadResponse = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "sanydressline" },
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
+            { folder: "sanydressline" },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
             }
-          }
         );
         const readStream = require("stream").Readable.from(buffer);
         readStream.pipe(uploadStream);
@@ -69,16 +69,16 @@ export async function POST(req) {
     }
 
     return NextResponse.json(
-      { message: "Gambar berhasil ditambahkan" },
-      { status: 200 }
+        { message: "Gambar berhasil ditambahkan" },
+        { status: 200 }
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      {
-        error: error.message || "Terjadi kesalahan saat menambahkan gambar",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Terjadi kesalahan saat menambahkan gambar",
+        },
+        { status: 500 }
     );
   }
 }
@@ -104,8 +104,8 @@ export async function DELETE(req) {
 
     if (images.length === 0) {
       return NextResponse.json(
-        { error: "Gambar tidak ditemukan" },
-        { status: 404 }
+          { error: "Gambar tidak ditemukan" },
+          { status: 404 }
       );
     }
 
@@ -121,23 +121,23 @@ export async function DELETE(req) {
       } catch (error) {
         console.error("Kesalahan saat menghapus gambar:", error);
         return NextResponse.json(
-          { error: "Kesalahan saat menghapus gambar" },
-          { status: 500 }
+            { error: "Kesalahan saat menghapus gambar" },
+            { status: 500 }
         );
       }
     }
 
     return NextResponse.json(
-      { message: "Gambar berhasil dihapus" },
-      { status: 200 }
+        { message: "Gambar berhasil dihapus" },
+        { status: 200 }
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      {
-        error: error.message || "Terjadi kesalahan saat menghapus gambar",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Terjadi kesalahan saat menghapus gambar",
+        },
+        { status: 500 }
     );
   }
 }

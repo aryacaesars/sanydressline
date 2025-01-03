@@ -1,6 +1,5 @@
-import "../../globals.css";
-import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import "../globals.css";
+import { UserProvider } from "@/context/UserContext";
 
 export const metadata = {
   title: "Create Next App",
@@ -11,10 +10,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
-        <SidebarProvider>
-          <AppSidebar />
+        <UserProvider>
           {children}
-        </SidebarProvider>
+        </UserProvider>
       </body>
     </html>
   );
