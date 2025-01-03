@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { Progress } from "@/components/ui/progress";
 
 export default function Dashboard() {
   const [pageContent, setPageContent] = useState([]);
@@ -11,6 +12,9 @@ export default function Dashboard() {
   const [editTitle, setEditTitle] = useState("");
   const [editParagraph, setEditParagraph] = useState("");
   const [newImages, setNewImages] = useState([{ file: null, error: "" }]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isChanged, setIsChanged] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     fetchPageContent();
@@ -42,10 +46,12 @@ export default function Dashboard() {
     setEditTitle(content.Title);
     setEditParagraph(content.Paragraph);
     setNewImages([{ file: null, error: "" }]);
+    setIsChanged(false);
   };
 
   const handleUpdate = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const response = await fetch(
         `/api/page-content?ContentID=${editContent.ContentID}`,
@@ -70,7 +76,6 @@ export default function Dashboard() {
               : content
           )
         );
-        setEditContent(null);
       } else {
         const errorText = await response.text();
         setError(`Error: ${errorText}`);
@@ -80,40 +85,47 @@ export default function Dashboard() {
       setError("Terjadi kesalahan saat memperbarui konten halaman");
     }
 
-    // Upload new images
-    const imageFormData = new FormData();
-    newImages.forEach((image) => {
-      if (image.file) {
+    // Upload new images if there are any
+    const imagesToUpload = newImages.filter((image) => image.file !== null);
+    if (imagesToUpload.length > 0) {
+      const imageFormData = new FormData();
+      imagesToUpload.forEach((image) => {
         imageFormData.append("Image", image.file);
-      }
-    });
+      });
 
-    try {
-      const imageResponse = await fetch(
-        `/api/page-content/image?ContentID=${editContent.ContentID}`,
-        {
-          method: "POST",
-          body: imageFormData,
-        }
-      );
+      try {
+        const imageResponse = await fetch(
+          `/api/page-content/image?ContentID=${editContent.ContentID}`,
+          {
+            method: "POST",
+            body: imageFormData,
+          }
+        );
 
-      if (imageResponse.ok) {
-        const imageResult = await imageResponse.json();
-        alert(`Gambar berhasil ditambahkan: ${JSON.stringify(imageResult)}`);
-        fetchPageContent(); // Refresh the list after image upload
-      } else {
-        const errorText = await imageResponse.text();
-        try {
-          const error = JSON.parse(errorText);
-          alert(`Error: ${JSON.stringify(error)}`);
-        } catch (e) {
-          alert(`Error: ${errorText}`);
+        if (imageResponse.ok) {
+          const imageResult = await imageResponse.json();
+          alert(`Gambar berhasil ditambahkan: ${JSON.stringify(imageResult)}`);
+          fetchPageContent(); // Refresh the list after image upload
+        } else {
+          const errorText = await imageResponse.text();
+          try {
+            const error = JSON.parse(errorText);
+            alert(`Error: ${JSON.stringify(error)}`);
+          } catch (e) {
+            alert(`Error: ${errorText}`);
+          }
         }
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Terjadi kesalahan saat menambahkan gambar");
       }
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Terjadi kesalahan saat menambahkan gambar");
     }
+
+    // Fetch updated images
+    fetchPageContent();
+
+    setIsLoading(false);
+    setEditContent(null); // Close the popover after update
   };
 
   const handleNewImageChange = (index, e) => {
@@ -127,18 +139,23 @@ export default function Dashboard() {
       i === index ? { file, error } : image
     );
     setNewImages(updatedNewImages);
+    setIsChanged(true);
   };
 
   const handleAddNewImage = () => {
     setNewImages([...newImages, { file: null, error: "" }]);
+    setIsChanged(true);
   };
 
   const handleRemoveNewImage = (index) => {
     const updatedNewImages = newImages.filter((_, i) => i !== index);
     setNewImages(updatedNewImages);
+    setIsChanged(true);
   };
 
   const handleRemoveExistingImage = async (imageID) => {
+    setProgress(0);
+    setIsLoading(true);
     try {
       const response = await fetch(
         `/api/page-content/image?ImageID=${imageID}`,
@@ -164,6 +181,27 @@ export default function Dashboard() {
               : content
           )
         );
+
+        // Update the editContent state to remove the deleted image
+        setEditContent((prevContent) => ({
+          ...prevContent,
+          Images: prevContent.Images.filter(
+            (image) => image.ImageID !== imageID
+          ),
+        }));
+
+        // Simulate progress
+        let progressValue = 0;
+        const interval = setInterval(() => {
+          progressValue += 10;
+          if (progressValue >= 100) {
+            clearInterval(interval);
+            setProgress(100);
+            setIsLoading(false);
+          } else {
+            setProgress(progressValue);
+          }
+        }, 100);
       } else {
         const errorText = await response.text();
         try {
@@ -172,11 +210,23 @@ export default function Dashboard() {
         } catch (e) {
           alert(`Error: ${errorText}`);
         }
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Error:", error);
       alert("Terjadi kesalahan saat menghapus gambar");
+      setIsLoading(false);
     }
+  };
+
+  const handleTitleChange = (e) => {
+    setEditTitle(e.target.value);
+    setIsChanged(true);
+  };
+
+  const handleParagraphChange = (e) => {
+    setEditParagraph(e.target.value);
+    setIsChanged(true);
   };
 
   return (
@@ -234,7 +284,7 @@ export default function Dashboard() {
                 <td className="border border-gray-300 px-4 py-2">
                   <button
                     onClick={() => handleEdit(content)}
-                    className="text-blue-500 hover:textblue-700"
+                    className="text-blue-500 hover:text-blue-700"
                   >
                     Edit
                   </button>
@@ -262,7 +312,7 @@ export default function Dashboard() {
                   type="text"
                   id="editTitle"
                   value={editTitle}
-                  onChange={(e) => setEditTitle(e.target.value)}
+                  onChange={handleTitleChange}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                 />
@@ -279,7 +329,7 @@ export default function Dashboard() {
                 <textarea
                   id="editParagraph"
                   value={editParagraph}
-                  onChange={(e) => setEditParagraph(e.target.value)}
+                  onChange={handleParagraphChange}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
                   rows="4"
@@ -294,6 +344,7 @@ export default function Dashboard() {
                     <button
                       type="button"
                       onClick={() => handleRemoveExistingImage(img.ImageID)}
+                      className="text-red-500 hover:text-red-700 ml-2"
                     >
                       Hapus
                     </button>
@@ -312,12 +363,17 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => handleRemoveNewImage(index)}
+                    className="text-red-500 hover:text-red-700 ml-2"
                   >
                     Hapus
                   </button>
                 </div>
               ))}
-              <button type="button" onClick={handleAddNewImage}>
+              <button
+                type="button"
+                onClick={handleAddNewImage}
+                className="text-blue-500 hover:text-blue-700"
+              >
                 Tambah Gambar
               </button>
               <br />
@@ -330,16 +386,22 @@ export default function Dashboard() {
                   onClick={() => setEditContent(null)}
                   className="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-white rounded-md shadow-sm"
                 >
-                  Cancel
+                  Tutup
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-black border border-transparent rounded-md shadow-sm hover:bg-gray-800"
+                  className={`inline-flex justify-center px-4 py-2 text-sm font-medium text-white border border-transparent rounded-md shadow-sm ${
+                    !isChanged || isLoading
+                      ? "bg-gray-400 cursor-not-allowed"
+                      : "bg-black hover:bg-gray-800"
+                  }`}
+                  disabled={!isChanged || isLoading}
                 >
-                  Update
+                  {isLoading ? "Updating..." : "Update"}
                 </button>
               </div>
             </form>
+            {isLoading && <Progress value={progress} className="w-full mt-4" />}
           </div>
         </div>
       )}

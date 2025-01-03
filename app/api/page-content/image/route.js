@@ -48,7 +48,7 @@ export async function POST(req) {
   try {
     const url = new URL(req.url);
     const formData = await req.formData();
-    const Image = formData.get("Image");
+    const Images = formData.getAll("Image");
     const ContentID = url.searchParams.get("ContentID");
     const findSectionName = await prisma.pageContent.findUnique({
       where: { ContentID: parseInt(ContentID) },
@@ -59,40 +59,46 @@ export async function POST(req) {
       where: { ContentID: parseInt(ContentID) },
     });
 
-    if (!Image) {
+    if (Images.length === 0) {
       return NextResponse.json(
         { error: "Field yang diperlukan hilang: Image" },
         { status: 400 }
       );
     }
 
-    // Upload image to Cloudinary
-    const buffer = Buffer.from(await Image.arrayBuffer());
-    const uploadResponse = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        { folder: "sanydressline" },
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
+    const uploadedImages = [];
+
+    for (let i = 0; i < Images.length; i++) {
+      const Image = Images[i];
+      const buffer = Buffer.from(await Image.arrayBuffer());
+      const uploadResponse = await new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "sanydressline" },
+          (error, result) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve(result);
+            }
           }
-        }
-      );
-      uploadStream.end(buffer);
-    });
+        );
+        uploadStream.end(buffer);
+      });
 
-    // Save image details to the database
-    const newImage = await prisma.image.create({
-      data: {
-        ContentID: parseInt(ContentID),
-        PublicID: uploadResponse.public_id,
-        Url: uploadResponse.secure_url,
-        Alt: `${sectionName} - Image ${imgCount + 1}`,
-      },
-    });
+      // Save image details to the database
+      const newImage = await prisma.image.create({
+        data: {
+          ContentID: parseInt(ContentID),
+          PublicID: uploadResponse.public_id,
+          Url: uploadResponse.secure_url,
+          Alt: `${sectionName} - Image ${imgCount + i + 1}`,
+        },
+      });
 
-    return NextResponse.json(newImage, { status: 201 });
+      uploadedImages.push(newImage);
+    }
+
+    return NextResponse.json(uploadedImages, { status: 201 });
   } catch (error) {
     console.error(error);
     return NextResponse.json(

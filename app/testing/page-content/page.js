@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [editContent, setEditContent] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editParagraph, setEditParagraph] = useState("");
+  const [newImages, setNewImages] = useState([{ file: null, error: "" }]);
 
   useEffect(() => {
     fetchPageContent();
@@ -39,6 +40,7 @@ export default function Dashboard() {
     setEditContent(content);
     setEditTitle(content.Title);
     setEditParagraph(content.Paragraph);
+    setNewImages([{ file: null, error: "" }]);
   };
 
   const handleUpdate = async (e) => {
@@ -76,6 +78,104 @@ export default function Dashboard() {
       console.error("Error updating content:", error);
       setError("Terjadi kesalahan saat memperbarui konten halaman");
     }
+
+    // Upload new images
+    const imageFormData = new FormData();
+    newImages.forEach((image) => {
+      if (image.file) {
+        imageFormData.append("Image", image.file);
+      }
+    });
+
+    try {
+      const imageResponse = await fetch(
+        `/api/page-content/image?ContentID=${editContent.ContentID}`,
+        {
+          method: "POST",
+          body: imageFormData,
+        }
+      );
+
+      if (imageResponse.ok) {
+        const imageResult = await imageResponse.json();
+        alert(`Gambar berhasil ditambahkan: ${JSON.stringify(imageResult)}`);
+        fetchPageContent(); // Refresh the list after image upload
+      } else {
+        const errorText = await imageResponse.text();
+        try {
+          const error = JSON.parse(errorText);
+          alert(`Error: ${JSON.stringify(error)}`);
+        } catch (e) {
+          alert(`Error: ${errorText}`);
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat menambahkan gambar");
+    }
+  };
+
+  const handleNewImageChange = (index, e) => {
+    const file = e.target.files[0];
+    const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+    const error = !validImageTypes.includes(file.type)
+      ? `${file.name} is not a valid image file.`
+      : "";
+
+    const updatedNewImages = newImages.map((image, i) =>
+      i === index ? { file, error } : image
+    );
+    setNewImages(updatedNewImages);
+  };
+
+  const handleAddNewImage = () => {
+    setNewImages([...newImages, { file: null, error: "" }]);
+  };
+
+  const handleRemoveNewImage = (index) => {
+    const updatedNewImages = newImages.filter((_, i) => i !== index);
+    setNewImages(updatedNewImages);
+  };
+
+  const handleRemoveExistingImage = async (imageID) => {
+    try {
+      const response = await fetch(
+        `/api/page-content/image?ImageID=${imageID}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (response.ok) {
+        const result = await response.json();
+        alert(`Gambar berhasil dihapus: ${JSON.stringify(result)}`);
+
+        // Update the state to remove the deleted image
+        setPageContent((prevContent) =>
+          prevContent.map((content) =>
+            content.ContentID === editContent.ContentID
+              ? {
+                  ...content,
+                  Images: content.Images.filter(
+                    (image) => image.ImageID !== imageID
+                  ),
+                }
+              : content
+          )
+        );
+      } else {
+        const errorText = await response.text();
+        try {
+          const error = JSON.parse(errorText);
+          alert(`Error: ${JSON.stringify(error)}`);
+        } catch (e) {
+          alert(`Error: ${errorText}`);
+        }
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Terjadi kesalahan saat menghapus gambar");
+    }
   };
 
   return (
@@ -105,13 +205,14 @@ export default function Dashboard() {
               <td>
                 {Array.isArray(content.Images) && content.Images.length > 0
                   ? content.Images.map((img, index) => (
-                      <Image
-                        key={index}
-                        src={img.Url}
-                        alt={img.Alt}
-                        width={50}
-                        height={50}
-                      />
+                      <div key={index}>
+                        <Image
+                          src={img.Url}
+                          alt={img.Alt}
+                          width={50}
+                          height={50}
+                        />
+                      </div>
                     ))
                   : "No Images"}
               </td>
@@ -144,6 +245,43 @@ export default function Dashboard() {
               required
             ></textarea>
             <br />
+
+            <label>Gambar:</label>
+            {editContent.Images.map((img, index) => (
+              <div key={index}>
+                <Image src={img.Url} alt={img.Alt} width={50} height={50} />
+                <button
+                  type="button"
+                  onClick={() => handleRemoveExistingImage(img.ImageID)}
+                >
+                  Hapus
+                </button>
+              </div>
+            ))}
+
+            <label>Tambah Gambar:</label>
+            {newImages.map((image, index) => (
+              <div key={index}>
+                <input
+                  type="file"
+                  name="Image"
+                  onChange={(e) => handleNewImageChange(index, e)}
+                />
+                {image.error && <p style={{ color: "red" }}>{image.error}</p>}
+                <button
+                  type="button"
+                  onClick={() => handleRemoveNewImage(index)}
+                >
+                  Hapus
+                </button>
+              </div>
+            ))}
+            <button type="button" onClick={handleAddNewImage}>
+              Tambah Gambar
+            </button>
+            <br />
+            <br />
+
             <button type="submit">Update</button>
             <button type="button" onClick={() => setEditContent(null)}>
               Cancel

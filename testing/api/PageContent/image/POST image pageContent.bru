@@ -5,13 +5,13 @@ meta {
 }
 
 post {
-  url: {{URL}}/api/page-content/image?ContentID=1
+  url: {{URL}}/api/page-content/image?ContentID=20
   body: multipartForm
   auth: none
 }
 
 params:query {
-  ContentID: 1
+  ContentID: 20
 }
 
 headers {
@@ -19,7 +19,7 @@ headers {
 }
 
 body:multipart-form {
-  Image: @file()
+  Image: @file(/home/padil/Pictures/Screenshot from 2024-12-25 15-37-55.png)
 }
 
 docs {
