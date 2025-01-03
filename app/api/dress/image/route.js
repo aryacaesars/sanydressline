@@ -89,8 +89,8 @@ export async function DELETE(req) {
 
     if (!imageIDs || imageIDs.length === 0) {
       return NextResponse.json(
-          { error: "Field imageIDs diperlukan" },
-          { status: 400 }
+        { error: "Field imageIDs diperlukan" },
+        { status: 400 }
       );
     }
 

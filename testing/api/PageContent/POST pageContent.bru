@@ -1,0 +1,128 @@
+meta {
+  name: POST pageContent
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{URL}}/api/page-content
+  body: multipartForm
+  auth: none
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  PageName: home
+  Section: about
+  Title: uhuy
+  Paragraph: pppppppppppp
+  Image: @file(/home/padil/Pictures/Screenshot from 2024-11-01 14-14-46.png)
+}
+
+docs {
+  ### **Perbarui Konten Halaman**
+  
+  #### Endpoint
+  
+  **PATCH** `/api/page-content`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pembaruan konten halaman berdasarkan `ContentID`. Nama halaman, bagian, judul, dan paragraf dapat diperbarui.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `PATCH`  
+  **URL**: `http://localhost:3000/api/page-content?ContentID=1`
+  
+  **Headers**:
+  
+  - `Content-Type: application/json`
+  
+  **Body** (JSON):
+  
+  ```json
+  {
+    "Title": "Updated Title",
+    "Paragraph": "Updated Paragraph"
+  }
+  ```
+  
+  > Anda harus menyertakan `ContentID` sebagai query parameter dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "ContentID": 1,
+    "PageName": "home",
+    "Section": "header",
+    "Title": "Updated Title",
+    "Paragraph": "Updated Paragraph"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan `ContentID` yang wajib atau field yang diperlukan dalam body.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Missing required query parameter: ContentID"
+     }
+     ```
+  
+     atau
+  
+     ```json
+     {
+       "error": "Missing required fields: Title, Paragraph"
+     }
+     ```
+  
+  2. **404 Not Found**  
+     Jika `ContentID` yang diberikan tidak ditemukan di database.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "ContentID not found in database"
+     }
+     ```
+  
+  3. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat memperbarui konten halaman.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Error updating page content"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung konten halaman yang diperbarui", function () {
+    pm.response.to.have.jsonBody("ContentID").that.is.a("number");
+    pm.response.to.have.jsonBody("Title").that.equals("Updated Title");
+    pm.response.to.have.jsonBody("Paragraph").that.equals("Updated Paragraph");
+  });
+  ```
+  
+}
