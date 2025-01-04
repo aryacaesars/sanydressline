@@ -1,0 +1,111 @@
+meta {
+  name: DELETE dress
+  type: http
+  seq: 5
+}
+
+delete {
+  url: {{URL}}/api/dress?DressID=52
+  body: none
+  auth: none
+}
+
+params:query {
+  DressID: 52
+}
+
+docs {
+  ### **Hapus Gambar**
+  
+  #### Endpoint
+  
+  **DELETE** `/api/image`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan penghapusan gambar berdasarkan `imageIDs`. Gambar yang dihapus akan dihapus dari Cloudinary dan catatan gambar dari database.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `DELETE`  
+  **URL**: `http://localhost:3000/api/image`
+  
+  **Body** (JSON):
+  
+  ```json
+  {
+    "imageIDs": [1, 2, 3]
+  }
+  ```
+  
+  > Anda harus menyertakan `imageIDs` dalam body permintaan.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "message": "Gambar berhasil dihapus"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan `imageIDs` yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Field imageIDs diperlukan"
+     }
+     ```
+  
+  2. **404 Not Found**  
+     Jika satu atau lebih `imageIDs` yang diberikan tidak ditemukan.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Gambar tidak ditemukan"
+     }
+     ```
+  
+  3. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat menghapus gambar dari Cloudinary atau database.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Kesalahan saat menghapus gambar"
+     }
+     ```
+  
+     atau
+  
+     ```json
+     {
+       "error": "Terjadi kesalahan saat menghapus gambar"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung pesan sukses", function () {
+    pm.response.to.have
+      .jsonBody("message")
+      .that.equals("Gambar berhasil dihapus");
+  });
+  ```
+  
+}

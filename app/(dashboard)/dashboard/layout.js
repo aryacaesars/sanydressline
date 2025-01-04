@@ -1,4 +1,6 @@
 import "../../globals.css";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export const metadata = {
   title: "Create Next App",
@@ -8,8 +10,12 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
-      
+      <body>
+        <SidebarProvider>
+          <AppSidebar />
+          {children}
+        </SidebarProvider>
+      </body>
     </html>
   );
 }

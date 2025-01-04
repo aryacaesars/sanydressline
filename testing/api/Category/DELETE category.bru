@@ -1,0 +1,95 @@
+meta {
+  name: DELETE category
+  type: http
+  seq: 3
+}
+
+delete {
+  url: {{URL}}/api/category?CategoryID=20&CategoryID=21
+  body: none
+  auth: none
+}
+
+params:query {
+  CategoryID: 20
+  CategoryID: 21
+}
+
+docs {
+  ### **Hapus Kategori**
+  
+  #### Endpoint
+  
+  **DELETE** `/api/category`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan penghapusan beberapa kategori berdasarkan `CategoryID`. Jika `CategoryID` tidak ditemukan atau kategori memiliki catatan terkait, permintaan akan gagal.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `DELETE`  
+  **URL**: `http://localhost:3000/api/category?CategoryID=1&CategoryID=2`
+  
+  > Anda harus menyertakan satu atau lebih `CategoryID` sebagai query parameters dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  [
+    { "CategoryID": 1, "Name": "Kategori 1" },
+    { "CategoryID": 2, "Name": "Kategori 2" }
+  ]
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+      Jika permintaan tidak menyertakan `CategoryID` yang wajib.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Query parameter CategoryID diperlukan"
+      }
+      ```
+      
+  2. **404 Not Found**  
+      Jika satu atau lebih `CategoryID` yang diberikan tidak ditemukan.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Salah satu atau beberapa kategori tidak ditemukan"
+      }
+      ```
+      
+  3. **409 Conflict**  
+      Jika satu atau lebih kategori memiliki catatan terkait.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Kategori dengan ID \"1\" memiliki 2 dress terkait"
+      }
+      ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung kategori yang dihapus", function () {
+    pm.response.to.have.jsonBody("length").that.is.above(0);
+  });
+  ```
+  
+}

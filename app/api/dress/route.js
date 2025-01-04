@@ -17,30 +17,50 @@ export async function POST(req) {
     const Name = formData.get("Name");
     const Description = formData.get("Description");
     const Price = formData.get("Price");
+    const OrderCount = formData.get("OrderCount");
+    const IsVisible = formData.get("IsVisible");
     const CategoryID = formData.get("CategoryID");
     const Sizes = JSON.parse(formData.get("Sizes"));
 
     // Utility untuk validasi input
     const validateInput = async ({
-      Name,
-      Description,
-      Price,
-      CategoryID,
-      Sizes,
-    }) => {
-      if (!Name || !Description || !Price || !CategoryID || !Sizes) {
-        throw new Error("Missing required fields");
+                                   Name,
+                                   Description,
+                                   Price,
+                                   OrderCount,
+                                   IsVisible,
+                                   CategoryID,
+                                   Sizes,
+                                 }) => {
+      if (
+          !Name ||
+          !Description ||
+          !Price ||
+          !OrderCount ||
+          !IsVisible ||
+          !CategoryID ||
+          !Sizes
+      ) {
+        throw new Error("Field yang diperlukan tidak lengkap");
       }
       // Validasi ukuran
       Sizes.forEach((size) => {
         if (!size.Size || size.Stock === undefined) {
-          throw new Error("Missing size or stock for each size");
+          throw new Error("Ukuran atau stok untuk setiap ukuran tidak lengkap");
         }
       });
     };
 
     // Validasi input
-    await validateInput({ Name, Description, Price, CategoryID, Sizes });
+    await validateInput({
+      Name,
+      Description,
+      Price,
+      OrderCount,
+      IsVisible,
+      CategoryID,
+      Sizes,
+    });
 
     // Upload images to Cloudinary
     const imageUrls = [];
@@ -49,14 +69,14 @@ export async function POST(req) {
       const buffer = Buffer.from(await Image.arrayBuffer());
       const uploadResponse = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "sanydressline" }, // Optional: specify a folder in Cloudinary
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
+            { folder: "sanydressline" }, // Optional: specify a folder in Cloudinary
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
             }
-          }
         );
         uploadStream.end(buffer);
       });
@@ -77,7 +97,8 @@ export async function POST(req) {
         Name,
         Description,
         Price: parseFloat(priceRounded), // Pastikan harga dibulatkan
-        OrderCount: 0,
+        OrderCount: parseInt(OrderCount),
+        IsVisible: IsVisible === "true",
         Category: {
           connect: { CategoryID: parseInt(CategoryID) }, // Menghubungkan dengan category
         },
@@ -85,7 +106,7 @@ export async function POST(req) {
         Sizes: {
           create: Sizes.map((size) => ({
             Size: size.Size,
-            Stock: size.Stock,
+            Stock: parseInt(size.Stock),
           })),
         },
       },
@@ -107,26 +128,14 @@ export async function POST(req) {
       });
     }
 
-    return new Response(
-      JSON.stringify({
-        ...newDress,
-        PriceFormatted: priceFormatted,
-      }),
-      {
-        status: 201,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    return NextResponse.json(newDress, { status: 201 });
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error creating dress",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+        {
+          error: error.message || "Terjadi kesalahan saat membuat dress",
+        },
+        { status: 500 }
     );
   }
 }
@@ -134,6 +143,7 @@ export async function POST(req) {
 export async function GET() {
   try {
     const dresses = await prisma.dress.findMany({
+      where: { IsVisible: true },
       include: {
         Category: true,
         Sizes: true,
@@ -154,10 +164,10 @@ export async function GET() {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      {
-        error: error.message || "Error retrieving dresses",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Error retrieving dresses",
+        },
+        { status: 500 }
     );
   }
 }
@@ -168,10 +178,10 @@ export async function DELETE(req) {
     const dressID = url.searchParams.get("DressID");
 
     if (!dressID) {
-      return new Response(JSON.stringify({ error: "DressID is required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+          { error: "DressID diperlukan" },
+          { status: 400 }
+      );
     }
 
     // Find all images associated with the dress
@@ -191,13 +201,15 @@ export async function DELETE(req) {
       try {
         await cloudinary.uploader.destroy(image.PublicID);
       } catch (error) {
-        console.error("Error deleting image from Cloudinary:", error);
-        return new Response(
-          JSON.stringify({ error: "Error deleting image from Cloudinary" }),
-          {
-            status: 500,
-            headers: { "Content-Type": "application/json" },
-          }
+        console.error(
+            "Kesalahan saat menghapus gambar dari Cloudinary:",
+            error
+        );
+        return NextResponse.json(
+            {
+              error: "Kesalahan saat menghapus gambar dari Cloudinary",
+            },
+            { status: 500 }
         );
       }
     }
@@ -216,29 +228,20 @@ export async function DELETE(req) {
       where: { DressID: parseInt(dressID) },
     });
 
-    return new Response(
-      JSON.stringify({
-        message: "Dress and associated images deleted successfully",
-        deletedDress,
-      }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+        { message: "Dress berhasil dihapus", deletedDress },
+        { status: 200 }
     );
   } catch (error) {
     if (error instanceof Error) {
       console.error(error.stack);
     }
-    console.error(error || "Unknown error");
-    return new Response(
-      JSON.stringify({
-        error: error?.message || "Error deleting dress",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    console.error(error || "Kesalahan tidak diketahui");
+    return NextResponse.json(
+        {
+          error: error.message || "Terjadi kesalahan saat menghapus dress",
+        },
+        { status: 500 }
     );
   }
 }
@@ -249,45 +252,43 @@ export async function PUT(req) {
     const dressID = url.searchParams.get("DressID");
 
     if (!dressID) {
-      return new Response(JSON.stringify({ error: "DressID is required" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+          { error: "DressID is required" },
+          { status: 400 }
+      );
     }
 
     const formData = await req.formData();
     const Name = formData.get("Name");
     const Description = formData.get("Description");
     const Price = formData.get("Price");
+    const OrderCount = formData.get("OrderCount");
+    const IsVisible = formData.get("IsVisible");
     const CategoryID = formData.get("CategoryID");
     const Sizes = JSON.parse(formData.get("Sizes"));
 
     // Validate input
     if (
-      !Name ||
-      !Description ||
-      !Price ||
-      !CategoryID ||
-      !Sizes ||
-      !Array.isArray(Sizes)
+        !Name ||
+        !Description ||
+        !Price ||
+        !OrderCount ||
+        !IsVisible ||
+        !CategoryID ||
+        !Sizes ||
+        !Array.isArray(Sizes)
     ) {
-      return new Response(
-        JSON.stringify({ error: "Missing or invalid required fields" }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" },
-        }
+      return NextResponse.json(
+          { error: "Field yang diperlukan tidak lengkap" },
+          { status: 400 }
       );
     }
 
     for (const size of Sizes) {
       if (!size.Size || size.Stock == null) {
-        return new Response(
-          JSON.stringify({ error: "Each size must include Size and Stock" }),
-          {
-            status: 400,
-            headers: { "Content-Type": "application/json" },
-          }
+        return NextResponse.json(
+            { error: "Ukuran atau stok untuk setiap ukuran tidak lengkap" },
+            { status: 400 }
         );
       }
     }
@@ -302,6 +303,8 @@ export async function PUT(req) {
         Name,
         Description,
         Price: parseFloat(priceRounded),
+        OrderCount: parseInt(OrderCount),
+        IsVisible: IsVisible === "true",
         Category: {
           connect: { CategoryID: parseInt(CategoryID) },
         },
@@ -309,7 +312,7 @@ export async function PUT(req) {
           deleteMany: {},
           create: Sizes.map((size) => ({
             Size: size.Size,
-            Stock: size.Stock,
+            Stock: parseInt(size.Stock),
           })),
         },
       },
@@ -325,34 +328,27 @@ export async function PUT(req) {
       currency: "IDR",
     }).format(updatedDress.Price);
 
-    return new Response(
-      JSON.stringify({
-        ...updatedDress,
-        PriceFormatted: priceFormatted,
-      }),
-      {
-        status: 200,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+    const responsePayload = {
+      ...updatedDress,
+      PriceFormatted: priceFormatted,
+    };
+
+    return NextResponse.json(responsePayload, { status: 200 });
   } catch (error) {
     console.error(error);
 
     if (error.code === "P2025") {
-      return new Response(JSON.stringify({ error: "Dress not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
+      return NextResponse.json(
+          { error: "Dress tidak ditemukan" },
+          { status: 404 }
+      );
     }
 
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error updating dress",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+        {
+          error: error.message || "Terjadi kesalahan saat memperbarui dress",
+        },
+        { status: 500 }
     );
   }
 }
