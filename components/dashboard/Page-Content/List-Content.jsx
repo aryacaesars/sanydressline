@@ -246,7 +246,7 @@ export default function Dashboard() {
 
       <div className="overflow-x-auto w-full">
         <table className="table-auto border-collapse border border-gray-300 w-full text-left">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 text-center">
             <tr>
               <th className="border border-gray-300 px-4 py-2">Section</th>
               <th className="border border-gray-300 px-4 py-2">Title</th>
@@ -258,33 +258,41 @@ export default function Dashboard() {
           <tbody>
             {pageContent.map((content) => (
               <tr key={content.ContentID} className="hover:bg-gray-50">
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2 w-1/12">
                   {content.Section}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2 w-2/12">
                   {content.Title}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2 w-4/12">
                   {content.Paragraph}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
-                  {Array.isArray(content.Images) && content.Images.length > 0
-                    ? content.Images.map((img, index) => (
-                        <div key={index}>
+                <td className="border border-gray-300 px-4 py-2 w-3/12">
+                  {Array.isArray(content.Images) &&
+                  content.Images.length > 0 ? (
+                    <div className="flex flex-wrap gap-2">
+                      {content.Images.map((img, index) => (
+                        <div
+                          key={index}
+                          className="w-24 h-24 relative overflow-hidden rounded-md"
+                        >
                           <Image
                             src={img.Url}
                             alt={img.Alt}
-                            width={50}
-                            height={50}
+                            fill
+                            className="object-cover"
                           />
                         </div>
-                      ))
-                    : "No Images"}
+                      ))}
+                    </div>
+                  ) : (
+                    "No Images"
+                  )}
                 </td>
-                <td className="border border-gray-300 px-4 py-2">
+                <td className="border border-gray-300 px-4 py-2 w-1/12 text-center">
                   <button
                     onClick={() => handleEdit(content)}
-                    className="text-blue-500 hover:text-blue-700"
+                    className="text-blue-500 hover:text-blue-700 text-sm"
                   >
                     Edit
                   </button>
@@ -304,7 +312,7 @@ export default function Dashboard() {
               <div className="space-y-2">
                 <label
                   htmlFor="editTitle"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-black"
                 >
                   Title
                 </label>
@@ -314,7 +322,7 @@ export default function Dashboard() {
                   value={editTitle}
                   onChange={handleTitleChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
                 />
               </div>
 
@@ -322,7 +330,7 @@ export default function Dashboard() {
               <div className="space-y-2">
                 <label
                   htmlFor="editParagraph"
-                  className="block text-sm font-medium text-gray-700"
+                  className="block text-sm font-medium text-black"
                 >
                   Paragraph
                 </label>
@@ -331,27 +339,46 @@ export default function Dashboard() {
                   value={editParagraph}
                   onChange={handleParagraphChange}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-green-500 focus:border-green-500 sm:text-sm"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm sm:text-sm"
                   rows="4"
                 ></textarea>
               </div>
 
-              <label>Gambar:</label>
+              <label className="block text-sm font-medium text-black">
+                Images
+              </label>
               {Array.isArray(editContent.Images) &&
-                editContent.Images.map((img, index) => (
-                  <div key={index}>
-                    <Image src={img.Url} alt={img.Alt} width={50} height={50} />
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveExistingImage(img.ImageID)}
-                      className="text-red-500 hover:text-red-700 ml-2"
-                    >
-                      Hapus
-                    </button>
+                editContent.Images.length > 0 && (
+                  <div
+                    className={`flex ${
+                      editContent.Images.length > 1 ? "flex-wrap gap-4" : ""
+                    }`}
+                  >
+                    {editContent.Images.map((img, index) => (
+                      <div key={index} className="flex flex-col items-center">
+                        <div className="w-32 h-32 relative overflow-hidden rounded-md">
+                          <Image
+                            src={img.Url}
+                            alt={img.Alt}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveExistingImage(img.ImageID)}
+                          className="text-red-500 hover:text-red-700 mt-1"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
 
-              <label>Tambah Gambar:</label>
+              <label className="block text-sm font-medium text-black">
+                Add Image
+              </label>
               {newImages.map((image, index) => (
                 <div key={index}>
                   <input
@@ -363,21 +390,12 @@ export default function Dashboard() {
                   <button
                     type="button"
                     onClick={() => handleRemoveNewImage(index)}
-                    className="text-red-500 hover:text-red-700 ml-2"
+                    className="text-red-500 hover:text-red-700"
                   >
                     Hapus
                   </button>
                 </div>
               ))}
-              <button
-                type="button"
-                onClick={handleAddNewImage}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                Tambah Gambar
-              </button>
-              <br />
-              <br />
 
               {/* Action Buttons */}
               <div className="flex justify-end space-x-4">
