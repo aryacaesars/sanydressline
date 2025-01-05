@@ -73,6 +73,21 @@ export function AppSidebar({ ...props }) {
           },
         ],
       },
+      {
+        title: "Category",
+        url: "/dashboard/category",
+        icon: PieChart,
+        items: [
+          {
+            title: "Add Category",
+            url: "/dashboard/category/add",
+          },
+          {
+            title: "List Category",
+            url: "/dashboard/category/list",
+          },
+        ],
+      },
     ],
   };
 
