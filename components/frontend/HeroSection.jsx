@@ -17,6 +17,7 @@ const HeroSection = () => {
         const data = await response.json();
         const heroData = data.find(item => item.Section === 'hero');
         setHeroContent(heroData);
+        console.log(heroData);
       } catch (error) {
         console.error('Error fetching hero content:', error);
       }
@@ -26,15 +27,17 @@ const HeroSection = () => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setFade(false);
-      setTimeout(() => {
-        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % (heroContent?.Img.length || 1));
-        setFade(true);
-      }, 500);
-    }, 5000);
+    if (heroContent && heroContent.Images && heroContent.Images.length > 0) {
+      const interval = setInterval(() => {
+        setFade(false);
+        setTimeout(() => {
+          setCurrentImageIndex((prevIndex) => (prevIndex + 1) % heroContent.Images.length);
+          setFade(true);
+        }, 500);
+      }, 5000);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
   }, [heroContent]);
 
   const handleButtonClick = () => {
@@ -88,21 +91,23 @@ const HeroSection = () => {
       </div>
 
       <div className="flex-1 flex justify-center">
-        <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
-          className={`rounded-2xl transition-opacity duration-500 ${fade ? 'opacity-100' : 'opacity-0'}`}
-        >
-          <CldImage
-            src={heroContent.Img[currentImageIndex]}
-            alt="Tampil Anggun"
-            width={500}
-            height={600}
-            crop="fill"
-            className="rounded-2xl w-[280px] h-[380px] md:w-[280px] md:h-[380px] lg:w-[340px] lg:h-[480px] rounded-tl-[70px] shadow-md rounded-br-[70px] lg:rounded-tl-[100px] lg:rounded-br-[100px] rounded-tr-md rounded-bl-md mx-auto mb-6 lg:mb-0 lg:ml-[160px] shadow-[0_8px_25px_rgba(0,0,0,0.6)] object-cover transition-opacity duration-500"
-          />
-        </motion.div>
+        {heroContent.Images && heroContent.Images.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
+            className={`rounded-2xl transition-opacity duration-500 ${fade ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <CldImage
+              src={heroContent.Images[currentImageIndex].Url}
+              alt={heroContent.Images[currentImageIndex].Alt}
+              width={500}
+              height={600}
+              crop="fill"
+              className="rounded-2xl w-[280px] h-[380px] md:w-[280px] md:h-[380px] lg:w-[340px] lg:h-[480px] rounded-tl-[70px] shadow-md rounded-br-[70px] lg:rounded-tl-[100px] lg:rounded-br-[100px] rounded-tr-md rounded-bl-md mx-auto mb-6 lg:mb-0 lg:ml-[160px] shadow-[0_8px_25px_rgba(0,0,0,0.6)] object-cover transition-opacity duration-500"
+            />
+          </motion.div>
+        )}
       </div>
     </section>
   );

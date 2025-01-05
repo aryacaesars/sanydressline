@@ -1,0 +1,88 @@
+meta {
+  name: GET pageContent
+  type: http
+  seq: 1
+}
+
+get {
+  url: {{URL}}/api/page-content?pageName=home
+  body: none
+  auth: none
+}
+
+params:query {
+  pageName: home
+}
+
+docs {
+  ### **Ambil Konten Halaman**
+  
+  #### Endpoint
+  
+  **GET** `/api/page-content`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pengambilan konten halaman berdasarkan `pageName`. Konten halaman akan diambil dari database berdasarkan nama halaman yang diberikan.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `GET`  
+  **URL**: `http://localhost:3000/api/page-content?pageName=home`
+  
+  > Anda harus menyertakan `pageName` sebagai query parameter dalam URL.
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  [
+    {
+      "ContentID": 1,
+      "PageName": "home",
+      "Section": "header",
+      "Title": "Welcome to Our Website",
+      "Paragraph": "This is the home page.",
+      "Images": []
+    }
+  ]
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan `pageName` yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Parameter query yang diperlukan hilang: pageName"
+     }
+     ```
+  
+  2. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat mengambil data konten.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Terjadi kesalahan saat mengambil data konten"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung daftar konten", function () {
+    pm.response.to.have.jsonBody("length").that.is.above(0);
+  });
+  ```
+}

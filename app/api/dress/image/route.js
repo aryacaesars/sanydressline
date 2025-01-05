@@ -16,6 +16,14 @@ export async function POST(req) {
     const formData = await req.formData();
     const images = formData.getAll("Image");
     const dressID = url.searchParams.get("DressID");
+
+    if (!dressID) {
+      return NextResponse.json(
+          { error: "DressID diperlukan" },
+          { status: 400 }
+      );
+    }
+
     const findDressName = await prisma.dress.findUnique({
       where: { DressID: parseInt(dressID) },
       select: { Name: true },
@@ -32,14 +40,14 @@ export async function POST(req) {
       const buffer = Buffer.from(await image.arrayBuffer());
       const uploadResponse = await new Promise((resolve, reject) => {
         const uploadStream = cloudinary.uploader.upload_stream(
-          { folder: "sanydressline" },
-          (error, result) => {
-            if (error) {
-              reject(error);
-            } else {
-              resolve(result);
+            { folder: "sanydressline" },
+            (error, result) => {
+              if (error) {
+                reject(error);
+              } else {
+                resolve(result);
+              }
             }
-          }
         );
         const readStream = require("stream").Readable.from(buffer);
         readStream.pipe(uploadStream);
@@ -60,35 +68,28 @@ export async function POST(req) {
       });
     }
 
-    return new Response(
-      JSON.stringify({ message: "Images uploaded successfully" }),
-      {
-        status: 201,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+        { message: "Gambar berhasil ditambahkan" },
+        { status: 200 }
     );
   } catch (error) {
     console.error(error);
-    return new Response(
-      JSON.stringify({
-        error: error.message || "Error uploading images",
-      }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
+    return NextResponse.json(
+        {
+          error: error.message || "Terjadi kesalahan saat menambahkan gambar",
+        },
+        { status: 500 }
     );
   }
 }
 
 export async function DELETE(req) {
   try {
-    const url = new URL(req.url);
-    const imageIDs = url.searchParams.getAll("ImageID");
+    const { imageIDs } = await req.json();
 
-    if (imageIDs.length === 0) {
+    if (!imageIDs || imageIDs.length === 0) {
       return NextResponse.json(
-        { error: "At least one ImageID is required" },
+        { error: "Field imageIDs diperlukan" },
         { status: 400 }
       );
     }
@@ -102,7 +103,10 @@ export async function DELETE(req) {
     });
 
     if (images.length === 0) {
-      return NextResponse.json({ error: "Images not found" }, { status: 404 });
+      return NextResponse.json(
+          { error: "Gambar tidak ditemukan" },
+          { status: 404 }
+      );
     }
 
     // Delete each image from Cloudinary and the database
@@ -115,25 +119,25 @@ export async function DELETE(req) {
           },
         });
       } catch (error) {
-        console.error("Error deleting image:", error);
+        console.error("Kesalahan saat menghapus gambar:", error);
         return NextResponse.json(
-          { error: "Error deleting one or more images" },
-          { status: 500 }
+            { error: "Kesalahan saat menghapus gambar" },
+            { status: 500 }
         );
       }
     }
 
     return NextResponse.json(
-      { message: "Images deleted successfully" },
-      { status: 200 }
+        { message: "Gambar berhasil dihapus" },
+        { status: 200 }
     );
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-      {
-        error: error.message || "Error deleting images",
-      },
-      { status: 500 }
+        {
+          error: error.message || "Terjadi kesalahan saat menghapus gambar",
+        },
+        { status: 500 }
     );
   }
 }

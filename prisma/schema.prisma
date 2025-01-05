@@ -21,6 +21,7 @@ model Dress {
   Description String
   Price       Decimal
   OrderCount  Int
+  IsVisible   Boolean  @default(true)
   CreatedAt   DateTime @default(now())
   UpdatedAt   DateTime @updatedAt
   CategoryID  Int
@@ -58,7 +59,6 @@ model PageContent {
   Section   String
   Title     String
   Paragraph String
-  Img       Json
   Images    Image[]
   UpdatedAt DateTime @updatedAt
 }

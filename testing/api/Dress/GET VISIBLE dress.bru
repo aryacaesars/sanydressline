@@ -1,0 +1,89 @@
+meta {
+  name: GET VISIBLE dress
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{URL}}/api/dress
+  body: none
+  auth: none
+}
+
+docs {
+  ### **Ambil Dress untuk katalog**
+  
+  #### Endpoint
+  
+  **GET** `/api/dress`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pengambilan seluruh dress yang terlihat (`IsVisible: true`). Setiap dress akan menyertakan informasi kategori, ukuran, gambar, dan harga yang diformat.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `GET`  
+  **URL**: `http://localhost:3000/api/dress`
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  [
+    {
+      "DressID": 1,
+      "Name": "Dress 1",
+      "Description": "Deskripsi Dress 1",
+      "Price": 100000,
+      "PriceFormatted": "Rp100.000,00",
+      "Category": {
+        "CategoryID": 1,
+        "Name": "Kategori 1"
+      },
+      "Sizes": [
+        {
+          "SizeID": 1,
+          "Size": "S",
+          "Stock": 10
+        }
+      ],
+      "Image": [
+        {
+          "ImageID": 1,
+          "Url": "http://example.com/image1.jpg",
+          "Alt": "Image 1"
+        }
+      ]
+    }
+  ]
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **500 Internal Server Error**  
+      Jika terjadi kesalahan saat mengambil dress.
+      
+      **Body Respons**:
+      
+      ```json
+      {
+        "error": "Error mengambil kategori"
+      }
+      ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung daftar dress", function () {
+    pm.response.to.have.jsonBody("length").that.is.above(0);
+  });
+  ```
+  
+}

@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "sanydressline",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

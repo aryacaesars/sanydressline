@@ -1,0 +1,142 @@
+meta {
+  name: UPDATE dress
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{URL}}/api/dress?DressID=49
+  body: multipartForm
+  auth: none
+}
+
+params:query {
+  DressID: 49
+}
+
+headers {
+  Content-Type: multipart/form-data
+}
+
+body:multipart-form {
+  Name: Update Dress Name
+  Description: Update Dress Description
+  Price: 100000
+  OrderCount: 5
+  IsVisible: false
+  CategoryID: 10
+  Sizes: [{"Size": "XL", "Stock": 5}]
+}
+
+docs {
+  ### **Perbarui Dress**
+  
+  #### Endpoint
+  
+  **PUT** `/api/dress`
+  
+  #### Deskripsi
+  
+  Endpoint ini memungkinkan pembaruan dress yang ada berdasarkan `DressID`. Data dress yang diperbarui termasuk nama, deskripsi, harga, jumlah pesanan, visibilitas, kategori, dan ukuran.
+  
+  #### Permintaan (Request)
+  
+  **Metode**: `PUT`  
+  **URL**: `http://localhost:3000/api/dress?DressID=1`  
+  **Header**:
+  
+  - `Content-Type: multipart/form-data`
+  
+  **Body** (form-data):
+  
+  - **Name**: [String] Nama dress
+  - **Description**: [String] Deskripsi dress
+  - **Price**: [Number] Harga dress
+  - **OrderCount**: [Number] Jumlah pesanan
+  - **IsVisible**: [Boolean] Apakah dress terlihat di katalog
+  - **CategoryID**: [Number] ID kategori
+  - **Sizes**: [JSON String] Ukuran dan stok dalam format JSON, misalnya:
+    ```json
+    [
+      { "Size": "S", "Stock": 10 },
+      { "Size": "M", "Stock": 15 }
+    ]
+    ```
+  
+  #### Respons
+  
+  **Kode Status**: `200 OK`
+  
+  **Body Respons** (JSON):
+  
+  ```json
+  {
+    "DressID": 1,
+    "Name": "Updated Dress",
+    "Description": "Updated Description",
+    "Price": 100000,
+    "OrderCount": 5,
+    "IsVisible": true,
+    "Category": {
+      "CategoryID": 1,
+      "Name": "Kategori 1"
+    },
+    "Sizes": [
+      {
+        "SizeID": 1,
+        "Size": "S",
+        "Stock": 10
+      }
+    ],
+    "PriceFormatted": "Rp100.000,00"
+  }
+  ```
+  
+  #### Respons Kesalahan (Error Responses)
+  
+  1. **400 Bad Request**  
+     Jika permintaan tidak menyertakan field yang wajib.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Field yang diperlukan tidak lengkap"
+     }
+     ```
+  
+  2. **404 Not Found**  
+     Jika `DressID` yang diberikan tidak ditemukan.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Dress tidak ditemukan"
+     }
+     ```
+  
+  3. **500 Internal Server Error**  
+     Jika terjadi kesalahan saat memperbarui dress.
+  
+     **Body Respons**:
+  
+     ```json
+     {
+       "error": "Terjadi kesalahan saat memperbarui dress"
+     }
+     ```
+  
+  #### Contoh Pengujian (Bruno Tests Tab)
+  
+  ```javascript
+  pm.test("Kode status adalah 200", function () {
+    pm.response.to.have.status(200);
+  });
+  pm.test("Respons mengandung dress yang diperbarui", function () {
+    pm.response.to.have.jsonBody("DressID").that.is.a("number");
+    pm.response.to.have.jsonBody("Name").that.equals("Updated Dress");
+  });
+  ```
+  
+}
