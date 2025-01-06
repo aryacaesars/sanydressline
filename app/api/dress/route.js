@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import cloudinary from "../../../lib/api/config/cloudinary-config";
 
 const prisma = new PrismaClient();
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second
 
 export const config = {
   api: {
@@ -140,10 +142,13 @@ export async function POST(req) {
   }
 }
 
-export async function GET() {
+export async function GET(req) {
   try {
+    const url = new URL(req.url);
+    const fetchAll = url.searchParams.get("fetchAll") === "true";
+
     const dresses = await prisma.dress.findMany({
-      where: { IsVisible: true },
+      where: fetchAll ? {} : { IsVisible: true },
       include: {
         Category: true,
         Sizes: true,
@@ -151,7 +156,6 @@ export async function GET() {
       },
     });
 
-    // Format harga untuk setiap dress
     const formattedDresses = dresses.map((dress) => ({
       ...dress,
       PriceFormatted: new Intl.NumberFormat("id-ID", {
@@ -164,11 +168,26 @@ export async function GET() {
   } catch (error) {
     console.error(error);
     return NextResponse.json(
-        {
-          error: error.message || "Error retrieving dresses",
-        },
-        { status: 500 }
+      {
+        error: error.message || "Error retrieving dresses",
+      },
+      { status: 500 }
     );
+  }
+}
+
+
+async function deleteImageWithRetry(publicId, retries = MAX_RETRIES) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      await cloudinary.uploader.destroy(publicId);
+      return;
+    } catch (error) {
+      if (attempt === retries) {
+        throw error;
+      }
+      await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY));
+    }
   }
 }
 
@@ -184,42 +203,32 @@ export async function DELETE(req) {
       );
     }
 
-    // Find all images associated with the dress
     const images = await prisma.image.findMany({
       where: { DressID: parseInt(dressID) },
     });
 
-    // if (images.length === 0) {
-    //   return new Response(JSON.stringify({ error: "Images not found" }), {
-    //     status: 404,
-    //     headers: { "Content-Type": "application/json" },
-    //   });
-    // }
-
-    // Delete each image from Cloudinary
     for (const image of images) {
+      const publicId = image.PublicID;
+      console.log("Retrieved image:", image); // Log the retrieved image
+      if (!publicId) {
+        console.error("PublicID tidak ditemukan untuk gambar:", image);
+        continue;
+      }
       try {
-        await cloudinary.uploader.destroy(image.PublicID);
+        await deleteImageWithRetry(publicId);
       } catch (error) {
-        console.error(
-            "Kesalahan saat menghapus gambar dari Cloudinary:",
-            error
-        );
+        console.error("Kesalahan saat menghapus gambar dari Cloudinary:", error);
         return NextResponse.json(
-            {
-              error: "Kesalahan saat menghapus gambar dari Cloudinary",
-            },
+            { error: "Kesalahan saat menghapus gambar dari Cloudinary" },
             { status: 500 }
         );
       }
     }
 
-    // Delete the dress and associated sizes from the database
     await prisma.size.deleteMany({
       where: { DressID: parseInt(dressID) },
     });
 
-    // Delete the image records from the database
     await prisma.image.deleteMany({
       where: { DressID: parseInt(dressID) },
     });
@@ -233,18 +242,14 @@ export async function DELETE(req) {
         { status: 200 }
     );
   } catch (error) {
-    if (error instanceof Error) {
-      console.error(error.stack);
-    }
-    console.error(error || "Kesalahan tidak diketahui");
+    console.error(error);
     return NextResponse.json(
-        {
-          error: error.message || "Terjadi kesalahan saat menghapus dress",
-        },
+        { error: error.message || "Terjadi kesalahan saat menghapus dress" },
         { status: 500 }
     );
   }
 }
+
 
 export async function PUT(req) {
   try {
@@ -253,76 +258,40 @@ export async function PUT(req) {
 
     if (!dressID) {
       return NextResponse.json(
-          { error: "DressID is required" },
-          { status: 400 }
+        { error: "DressID is required" },
+        { status: 400 }
       );
     }
 
     const formData = await req.formData();
-    const Name = formData.get("Name");
-    const Description = formData.get("Description");
-    const Price = formData.get("Price");
-    const OrderCount = formData.get("OrderCount");
-    const IsVisible = formData.get("IsVisible");
-    const CategoryID = formData.get("CategoryID");
-    const Sizes = JSON.parse(formData.get("Sizes"));
+    const updateData = {};
 
-    // Validate input
-    if (
-        !Name ||
-        !Description ||
-        !Price ||
-        !OrderCount ||
-        !IsVisible ||
-        !CategoryID ||
-        !Sizes ||
-        !Array.isArray(Sizes)
-    ) {
-      return NextResponse.json(
-          { error: "Field yang diperlukan tidak lengkap" },
-          { status: 400 }
-      );
+    if (formData.has("Name")) updateData.Name = formData.get("Name");
+    if (formData.has("Description")) updateData.Description = formData.get("Description");
+    if (formData.has("Price")) updateData.Price = parseFloat(formData.get("Price")).toFixed(2);
+    if (formData.has("OrderCount")) updateData.OrderCount = parseInt(formData.get("OrderCount"));
+    if (formData.has("IsVisible")) updateData.IsVisible = formData.get("IsVisible") === "true";
+    if (formData.has("CategoryID")) updateData.Category = { connect: { CategoryID: parseInt(formData.get("CategoryID")) } };
+    if (formData.has("Sizes")) {
+      const Sizes = JSON.parse(formData.get("Sizes"));
+      updateData.Sizes = {
+        deleteMany: {},
+        create: Sizes.map((size) => ({
+          Size: size.Size,
+          Stock: parseInt(size.Stock),
+        })),
+      };
     }
 
-    for (const size of Sizes) {
-      if (!size.Size || size.Stock == null) {
-        return NextResponse.json(
-            { error: "Ukuran atau stok untuk setiap ukuran tidak lengkap" },
-            { status: 400 }
-        );
-      }
-    }
-
-    // Round price to two decimal places
-    const priceRounded = parseFloat(Price).toFixed(2);
-
-    // Update dress
     const updatedDress = await prisma.dress.update({
       where: { DressID: parseInt(dressID, 10) },
-      data: {
-        Name,
-        Description,
-        Price: parseFloat(priceRounded),
-        OrderCount: parseInt(OrderCount),
-        IsVisible: IsVisible === "true",
-        Category: {
-          connect: { CategoryID: parseInt(CategoryID) },
-        },
-        Sizes: {
-          deleteMany: {},
-          create: Sizes.map((size) => ({
-            Size: size.Size,
-            Stock: parseInt(size.Stock),
-          })),
-        },
-      },
+      data: updateData,
       include: {
         Category: true,
         Sizes: true,
       },
     });
 
-    // Format price for response
     const priceFormatted = new Intl.NumberFormat("id-ID", {
       style: "currency",
       currency: "IDR",
@@ -333,22 +302,26 @@ export async function PUT(req) {
       PriceFormatted: priceFormatted,
     };
 
+    if (!responsePayload) {
+      throw new Error("Failed to create response payload");
+    }
+
     return NextResponse.json(responsePayload, { status: 200 });
   } catch (error) {
     console.error(error);
 
     if (error.code === "P2025") {
       return NextResponse.json(
-          { error: "Dress tidak ditemukan" },
-          { status: 404 }
+        { error: "Dress not found" },
+        { status: 404 }
       );
     }
 
     return NextResponse.json(
-        {
-          error: error.message || "Terjadi kesalahan saat memperbarui dress",
-        },
-        { status: 500 }
+      {
+        error: error.message || "An error occurred while updating the dress",
+      },
+      { status: 500 }
     );
   }
 }
