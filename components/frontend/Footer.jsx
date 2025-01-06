@@ -97,7 +97,7 @@ const Footer = () => {
 
         {/* Navigasi */}
         <div className="flex flex-col space-y-4">
-          <p className="font-bold text-lg mb-4">Informasi</p>
+          <p className="font-bold text-lg mb-4">Navigasi</p>
           {menuItems.map((item, index) => (
             <Link
               key={index}
