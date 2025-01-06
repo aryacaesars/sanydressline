@@ -6,11 +6,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
 
 const FilterPanel = ({ onFilterChange }) => {
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [isVisible, setIsVisible] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const [isVisible, setIsVisible] = useState("all");
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
@@ -27,16 +26,15 @@ const FilterPanel = ({ onFilterChange }) => {
     fetchCategories();
   }, []);
 
-  const handleFilterChange = () => {
+  useEffect(() => {
     onFilterChange({ category: selectedCategory, isVisible });
-  };
+  }, [selectedCategory, isVisible, onFilterChange]);
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-md">
-      <h2 className="text-lg font-semibold mb-4">Filter Products</h2>
+    <div className="flex gap-4">
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Category</label>
-        <Select onValueChange={setSelectedCategory}>
+        <Select onValueChange={setSelectedCategory} defaultValue="all">
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select a category" />
           </SelectTrigger>
@@ -52,7 +50,7 @@ const FilterPanel = ({ onFilterChange }) => {
       </div>
       <div className="mb-4">
         <label className="block text-sm font-medium mb-2">Visibility</label>
-        <Select onValueChange={setIsVisible}>
+        <Select onValueChange={setIsVisible} defaultValue="all">
           <SelectTrigger className="w-full">
             <SelectValue placeholder="Select visibility" />
           </SelectTrigger>
@@ -63,7 +61,6 @@ const FilterPanel = ({ onFilterChange }) => {
           </SelectContent>
         </Select>
       </div>
-      <Button onClick={handleFilterChange}>Apply Filters</Button>
     </div>
   );
 };

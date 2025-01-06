@@ -163,10 +163,10 @@ export default function DressShowcase() {
     }
   };
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = useCallback((newFilters) => {
     setFilters(newFilters);
     setCurrentPage(1); // Reset to first page when filters change
-  };
+  }, []);
 
   return (
     <div id="product" className="min-h-screen py-8 px-4 md:px-10 bg-gray-50">
@@ -180,8 +180,8 @@ export default function DressShowcase() {
           >
             Product List
           </motion.h1>
+          <FilterPanel onFilterChange={handleFilterChange} />
         </div>
-        <FilterPanel onFilterChange={handleFilterChange} />
         <div id="product-section" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-6">
           {loading
             ? Array.from({ length: dresses.length || ITEMS_PER_PAGE }).map((_, index) => <ProductSkeleton key={index} />)
