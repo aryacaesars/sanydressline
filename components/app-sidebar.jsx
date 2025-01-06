@@ -49,16 +49,6 @@ export function AppSidebar({ ...props }) {
             url: "/dashboard/product/list",
             icon: ListBulletIcon,
           },
-          {
-            title: "Update Product",
-            url: "/dashboard/product/update",
-            icon: PencilSquareIcon,
-          },
-          {
-            title: "Delete Product",
-            url: "/dashboard/product/delete",
-            icon: TrashIcon,
-          },
         ],
       },
       {
