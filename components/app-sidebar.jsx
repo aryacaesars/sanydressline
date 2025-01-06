@@ -3,13 +3,14 @@
 
 import * as React from "react";
 import {
-  Bot,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
-  PieChart,
-  SquareTerminal,
-} from "lucide-react";
+  HomeIcon,
+  DocumentTextIcon,
+  ChartPieIcon,
+  PlusIcon,
+  ListBulletIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -23,68 +24,64 @@ import {
 } from "@/components/ui/sidebar";
 
 export function AppSidebar({ ...props }) {
-
-
   const data = {
     teams: [
       {
         name: "Sanydressline",
-        logo: GalleryVerticalEnd,
+        logo: HomeIcon,
         plan: "Enterprise",
       },
     ],
     navMain: [
       {
-        title: "Page Content",
-        url: "/dashboard/page-content",
-        icon: SquareTerminal,
-        isActive: true,
-        items: [
-          {
-            title: "Add Content",
-            url: "/dashboard/page-content/add",
-          },
-          {
-            title: "List Content",
-            url: "/dashboard/page-content/list",
-          },
-        ],
-      },
-      {
         title: "Product",
         url: "/dashboard/product",
-        icon: Bot,
+        icon: DocumentTextIcon,
+        isActive: true,
         items: [
           {
             title: "Add Product",
             url: "/dashboard/product/add",
+            icon: PlusIcon,
           },
           {
             title: "List Product",
             url: "/dashboard/product/list",
+            icon: ListBulletIcon,
+          },
+        ],
+      },
+      {
+        title: "Page Content",
+        url: "/dashboard/page-content",
+        icon: DocumentTextIcon,
+        items: [
+          {
+            title: "Add Content",
+            url: "/dashboard/page-content/add",
+            icon: PlusIcon,
           },
           {
-            title: "Update Product",
-            url: "/dashboard/product/update",
-          },
-          {
-            title: "Delete Product",
-            url: "/dashboard/product/delete",
+            title: "List Content",
+            url: "/dashboard/page-content/list",
+            icon: ListBulletIcon,
           },
         ],
       },
       {
         title: "Category",
         url: "/dashboard/category",
-        icon: PieChart,
+        icon: ChartPieIcon,
         items: [
           {
             title: "Add Category",
             url: "/dashboard/category/add",
+            icon: PlusIcon,
           },
           {
             title: "List Category",
             url: "/dashboard/category/list",
+            icon: ListBulletIcon,
           },
         ],
       },
