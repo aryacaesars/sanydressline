@@ -11,9 +11,19 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormLabel,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -22,7 +32,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +41,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
@@ -41,17 +49,21 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [formData, setFormData] = useState(null);
 
+
   const form = useForm({
     resolver: zodResolver(editProductSchema),
     defaultValues: {
-      name: "",
-      sizes: [],
-      description: "",
-      price: "",
-      images: [],
-      categoryID: "",
+      name: product?.Name || "",
+      sizes: product?.Sizes || [],
+      description: product?.Description || "",
+      price: product?.Price || 0,
+      images: product?.Image || [],
+      categoryID: product?.CategoryID?.toString() || "",
+      isVisible: product?.IsVisible ?? true,
+      orderCount: product?.OrderCount || 0,
     },
   });
+
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -79,6 +91,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
         description: product.Description,
         price: product.Price,
         categoryID: String(product.CategoryID),
+        isVisible: product.IsVisible,
       });
       setImagePreviews(product.Image.map((img) => img.Url));
     }
@@ -94,17 +107,17 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
     setImagePreviews(previews);
   };
 
-const handleSubmit = (data) => {
-  const parsedData = {
-    ...data,
-    sizes: data.sizes.map((size) => ({
-      ...size,
-      Stock: String(size.Stock),
-    })),
+  const handleSubmit = (data) => {
+    const parsedData = {
+      ...data,
+      sizes: data.sizes.map((size) => ({
+        ...size,
+        Stock: String(size.Stock),
+      })),
+    };
+    setFormData(parsedData);
+    setIsAlertOpen(true);
   };
-  setFormData(parsedData);
-  setIsAlertOpen(true);
-};
 
   const handleConfirm = () => {
     onSubmit(formData);
@@ -122,15 +135,28 @@ const handleSubmit = (data) => {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Name</Label>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Product Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Product Description" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -141,7 +167,7 @@ const handleSubmit = (data) => {
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Price</Label>
+                    <FormLabel>Price</FormLabel>
                     <FormControl>
                       <Input type="number" placeholder="Product Price" {...field} />
                     </FormControl>
@@ -154,18 +180,20 @@ const handleSubmit = (data) => {
                 name="categoryID"
                 render={({ field }) => (
                   <FormItem>
-                    <Label>Category</Label>
+                    <FormLabel>Category</FormLabel>
                     <FormControl>
-                      <select {...field} className="block w-full p-2 border border-gray-300 rounded">
-                        <option value="" disabled>
-                          Select Category
-                        </option>
-                        {categories.map((category) => (
-                          <option key={category.CategoryID} value={String(category.CategoryID)}>
-                            {category.Name}
-                          </option>
-                        ))}
-                      </select>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a category" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {categories.map((category) => (
+                            <SelectItem key={category.CategoryID} value={String(category.CategoryID)}>
+                              {category.Name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -173,50 +201,37 @@ const handleSubmit = (data) => {
               />
               <FormField
                 control={form.control}
-                name="description"
+                name="isVisible"
                 render={({ field }) => (
-                  <FormItem>
-                    <Label>Description</Label>
+                  <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4">
                     <FormControl>
-                      <Input placeholder="Product Description" {...field} />
+                      <Checkbox checked={field.value} onCheckedChange={field.onChange} />
                     </FormControl>
-                    <FormMessage />
+                    <div className="space-y-1 leading-none">
+                      <FormLabel>Visible</FormLabel>
+                      <FormDescription>
+                        Toggle visibility of the product.
+                      </FormDescription>
+                    </div>
                   </FormItem>
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="images"
-              render={({ field }) => (
-                <FormItem>
-                  <Label>Images</Label>
-                  <FormControl>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageChange}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <div className="flex flex-wrap gap-4">
               {imagePreviews.map((preview, index) => (
-                <img key={index} src={preview} alt={`Preview ${index + 1}`} className="w-32 h-32 object-cover rounded" />
+                <img key={index} src={preview} alt={`Preview ${index + 1}`} className="w-24 h-24 object-cover" />
               ))}
             </div>
             <div>
-              <Label>Sizes</Label>
+              <FormLabel>Sizes</FormLabel>
               {fields.map((item, index) => (
-                <div key={item.id} className="flex gap-2 mb-2">
+                <div key={item.id} className="flex space-x-4">
                   <FormField
                     control={form.control}
                     name={`sizes.${index}.Size`}
                     render={({ field }) => (
                       <FormItem>
+                        <FormLabel>Size</FormLabel>
                         <FormControl>
                           <Input placeholder="Size" {...field} />
                         </FormControl>
@@ -229,6 +244,7 @@ const handleSubmit = (data) => {
                     name={`sizes.${index}.Stock`}
                     render={({ field }) => (
                       <FormItem>
+                        <FormLabel>Stock</FormLabel>
                         <FormControl>
                           <Input type="number" placeholder="Stock" {...field} />
                         </FormControl>
@@ -249,9 +265,6 @@ const handleSubmit = (data) => {
         </Form>
       </DialogContent>
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
-        <AlertDialogTrigger asChild>
-          <Button variant="outline">Show Dialog</Button>
-        </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Are you sure you want to update this product?</AlertDialogTitle>
