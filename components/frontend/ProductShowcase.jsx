@@ -13,6 +13,15 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import ProductSkeleton from "@/components/frontend/skeleton/ProductSkeleton";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ProductCard = dynamic(() => import("@/components/frontend/Product"), {
   ssr: false,
@@ -124,19 +133,23 @@ export default function DressShowcase() {
           >
             Dress Collection
           </motion.h1>
-          <select
-            value={selectedCategory}
-            onChange={(e) => handleCategoryChange(e.target.value)}
-            className="border border-gray-300 rounded-md p-2"
-          >
-            {categories.map((category, index) => (
-              <option key={index} value={category}>
-                {category}
-              </option>
-            ))}
-          </select>
+          <Select onValueChange={handleCategoryChange}>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="All" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>Categories</SelectLabel>
+                {categories.map((category, index) => (
+                  <SelectItem key={index} value={category}>
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
         </div>
-        <div id="product-section" className="grid grid-cols-3 gap-4 sm:gap-6">
+        <div id="product-section" className="grid grid-cols-2 gap-4 sm:gap-6">
           {loading
             ? Array.from({ length: dresses.length || ITEMS_PER_PAGE }).map(
                 (_, index) => <ProductSkeleton key={index} />

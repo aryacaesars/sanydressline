@@ -11,7 +11,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
-    const { Image: ProductImages, Name, PriceFormatted, Description, Sizes, Category } = product;
+    const { Image: ProductImages, Name, PriceFormatted, Description, Sizes, Category, OrderCount } = product;
     const [selectedSize, setSelectedSize] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [showAlert, setShowAlert] = useState(false);
@@ -41,8 +41,8 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
             return;
         }
         onAddToCart({ ...product, selectedSize, quantity }, quantity);
-        toast("Item added to cart!", {
-            description: `${Name} has been added to your cart.`,
+        toast("Item ditambahkan ke keranjang!", {
+            description: `${Name} telah ditambahkan ke keranjang Anda.`,
             action: {
                 label: "Checkout",
                 onClick: () => router.push('/checkout'),
@@ -92,7 +92,7 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                             <p className="text-3xl font-bold text-primary mb-4">{PriceFormatted}</p>
                             <p className="text-gray-600 mb-4">{Description}</p>
                             <div className="mb-4">
-                                <h3 className="font-semibold mb-2">Available Sizes:</h3>
+                                <h3 className="font-semibold mb-2">Ukuran Tersedia:</h3>
                                 <div className="flex gap-2 flex-wrap">
                                     {Sizes.map((size) => (
                                         <button
@@ -106,7 +106,7 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                                 </div>
                             </div>
                             <p className="mb-2">
-                                <span className="font-semibold">Stock:</span> {selectedSize ? Sizes.find(size => size.SizeID === selectedSize).Stock : totalStock}
+                                <span className="font-semibold">Stok:</span> {selectedSize ? Sizes.find(size => size.SizeID === selectedSize).Stock : totalStock}
                             </p>
                             {selectedSize && (
                                 <div className="mb-4 flex items-center justify-between gap-4">
@@ -127,16 +127,17 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                                     </div>
                                 </div>
                             )}
-                            <p className="mb-2"><span className="font-semibold">Category:</span> {Category.Name}</p>
+                            <p className="mb-2"><span className="font-semibold">Kategori:</span> {Category.Name}</p>
+                            <p className="mb-2"><span className="font-semibold">Jumlah Penggunaan:</span> {OrderCount}</p>
                             <Button
                                 className="w-full bg-primary text-green-900 hover:border-green-900 hover:bg-white mt-auto"
                                 onClick={handleAddToCart}
                             >
-                                <ShoppingCart className="mr-2 h-4 w-4" /> Add to Cart
+                                <ShoppingCart className="mr-2 h-4 w-4" /> Tambahkan ke Keranjang
                             </Button>
                             {showAlert && (
                                 <Alert className="mt-4 text-green-900" variant="warning">
-                                    Please select a size before adding to cart.
+                                    Silakan pilih ukuran sebelum menambahkan ke keranjang.
                                 </Alert>
                             )}
                         </div>
