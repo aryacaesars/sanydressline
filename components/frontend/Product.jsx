@@ -20,7 +20,7 @@ const ProductCard = React.memo(({product, onAddToCart, onProductClick}) => {
     };
 
     return (
-        <Card className="w-full overflow-hidden bg-white shadow-lg rounded-lg">
+        <Card className="w-full overflow-hidden bg-white shadow-lg rounded-xl">
             <motion.div
                 initial={{opacity: 0}}
                 animate={{opacity: 1}}
@@ -84,7 +84,7 @@ const ProductCard = React.memo(({product, onAddToCart, onProductClick}) => {
                         className="w-full"
                     >
                         <Button onClick={handleAddToCart}
-                                className="w-full bg-primary text-green-900 hover:bg-primary/90">
+                                className="w-full rounded-xl bg-primary text-green-900 hover:bg-primary/90">
                             <ShoppingCart className="mr-2 h-4 w-4"/> Order
                         </Button>
                     </motion.div>

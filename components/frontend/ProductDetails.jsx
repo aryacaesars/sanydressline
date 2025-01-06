@@ -1,6 +1,4 @@
-"use client";
-
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, ShoppingCart } from 'lucide-react';
 import { AiOutlinePlus, AiOutlineMinus } from 'react-icons/ai';
@@ -16,6 +14,12 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
     const [quantity, setQuantity] = useState(1);
     const [showAlert, setShowAlert] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        if (Sizes.length > 0) {
+            setSelectedSize(Sizes[0].SizeID);
+        }
+    }, [Sizes]);
 
     const handleSizeClick = useCallback((sizeId) => {
         setSelectedSize(selectedSize === sizeId ? null : sizeId);
@@ -97,7 +101,7 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                                     {Sizes.map((size) => (
                                         <button
                                             key={size.SizeID}
-                                            className={`px-4 py-2 border rounded-md text-sm font-medium transition-all ${selectedSize === size.SizeID ? 'bg-green-900 text-white border-green-900' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}`}
+                                            className={`px-4 rounded-xl py-2 border rounded-md text-sm font-medium transition-all ${selectedSize === size.SizeID ? 'bg-green-900 text-white border-green-900' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}`}
                                             onClick={() => handleSizeClick(size.SizeID)}
                                         >
                                             {size.Size}
@@ -130,7 +134,7 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                             <p className="mb-2"><span className="font-semibold">Kategori:</span> {Category.Name}</p>
                             <p className="mb-2"><span className="font-semibold">Jumlah Penggunaan:</span> {OrderCount}</p>
                             <Button
-                                className="w-full bg-primary text-green-900 hover:border-green-900 hover:bg-white mt-auto"
+                                className="w-full bg-primary rounded-xl text-green-900 hover:border-green-900 hover:bg-white mt-auto"
                                 onClick={handleAddToCart}
                             >
                                 <ShoppingCart className="mr-2 h-4 w-4" /> Tambahkan ke Keranjang
