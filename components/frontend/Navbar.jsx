@@ -135,11 +135,11 @@ const Navbar = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden fixed left-0 top-0 w-full bg-white shadow-b-lg shadow-t-0 p-6 z-40"
+              className="lg:hidden fixed min-h-screen left-0 top-0 w-full bg-white shadow-b-lg shadow-t-0 p-6 z-40"
             >
               <div className="flex flex-col items-center space-y-6">
                 {/* Logo di tengah mobile menu */}
-                <div className="w-full flex justify-center">
+                <div className="w-full flex mb-40 justify-center">
                   <Image
                     src={logo}
                     alt="SanyDressline Logo"
