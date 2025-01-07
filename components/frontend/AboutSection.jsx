@@ -47,10 +47,10 @@ const AboutSection = () => {
     <section id="about-us" className="container md:px-20 mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-40">
       <div className="flex-1 order-2 md:order-1 md:ml-2">
         <motion.div
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
-          className={`rounded-2xl transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"}`}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+          className={`rounded-2xl transition-opacity duration-500 ${fade ? "opacity-100" : "opacity-0"} md:opacity-100`}
         >
           <CldImage
             src={aboutContent.Images[currentImageIndex].Url}
@@ -66,7 +66,7 @@ const AboutSection = () => {
       <div className="flex-1 order-1 md:order-2 md:-ml-60">
         <motion.h1
           className="text-4xl font-bold text-green-800 leading-snug mb-4"
-          initial={{ opacity: 0, y: -50 }}
+          initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: "easeOut" }}
         >
@@ -74,9 +74,9 @@ const AboutSection = () => {
         </motion.h1>
         <motion.p
           className="text-gray-700 mb-6 max-w-xl"
-          initial={{ opacity: 0, x: 50 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.7, delay: 0.6, ease: "easeOut" }}
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
           {aboutContent.Paragraph}
         </motion.p>
