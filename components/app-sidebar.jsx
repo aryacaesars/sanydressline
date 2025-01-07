@@ -57,11 +57,6 @@ export function AppSidebar({ ...props }) {
         icon: DocumentTextIcon,
         items: [
           {
-            title: "Add Content",
-            url: "/dashboard/page-content/add",
-            icon: PlusIcon,
-          },
-          {
             title: "List Content",
             url: "/dashboard/page-content/list",
             icon: ListBulletIcon,
