@@ -4,6 +4,16 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Progress } from "@/components/ui/progress";
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function Dashboard() {
   const [pageContent, setPageContent] = useState([]);
@@ -15,6 +25,7 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState(false);
   const [isChanged, setIsChanged] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [isAlertOpen, setIsAlertOpen] = useState(false);
 
   useEffect(() => {
     fetchPageContent();
@@ -28,12 +39,7 @@ export default function Dashboard() {
         setPageContent(data);
       } else {
         const errorText = await response.text();
-        try {
-          const error = JSON.parse(errorText);
-          setError(`Error: ${JSON.stringify(error)}`);
-        } catch (e) {
-          setError(`Error: ${errorText}`);
-        }
+        setError(`Error: ${errorText}`);
       }
     } catch (error) {
       console.error("Error fetching page content:", error);
@@ -49,8 +55,7 @@ export default function Dashboard() {
     setIsChanged(false);
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  const handleUpdate = async () => {
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -85,7 +90,14 @@ export default function Dashboard() {
       setError("Terjadi kesalahan saat memperbarui konten halaman");
     }
 
-    // Upload new images if there are any
+    await uploadNewImages();
+
+    fetchPageContent();
+    setIsLoading(false);
+    setEditContent(null);
+  };
+
+  const uploadNewImages = async () => {
     const imagesToUpload = newImages.filter((image) => image.file !== null);
     if (imagesToUpload.length > 0) {
       const imageFormData = new FormData();
@@ -105,27 +117,15 @@ export default function Dashboard() {
         if (imageResponse.ok) {
           const imageResult = await imageResponse.json();
           alert(`Gambar berhasil ditambahkan: ${JSON.stringify(imageResult)}`);
-          fetchPageContent(); // Refresh the list after image upload
         } else {
           const errorText = await imageResponse.text();
-          try {
-            const error = JSON.parse(errorText);
-            alert(`Error: ${JSON.stringify(error)}`);
-          } catch (e) {
-            alert(`Error: ${errorText}`);
-          }
+          alert(`Error: ${errorText}`);
         }
       } catch (error) {
         console.error("Error:", error);
         alert("Terjadi kesalahan saat menambahkan gambar");
       }
     }
-
-    // Fetch updated images
-    fetchPageContent();
-
-    setIsLoading(false);
-    setEditContent(null); // Close the popover after update
   };
 
   const handleNewImageChange = (index, e) => {
@@ -168,7 +168,6 @@ export default function Dashboard() {
         const result = await response.json();
         alert(`Gambar berhasil dihapus: ${JSON.stringify(result)}`);
 
-        // Update the state to remove the deleted image
         setPageContent((prevContent) =>
           prevContent.map((content) =>
             content.ContentID === editContent.ContentID
@@ -182,7 +181,6 @@ export default function Dashboard() {
           )
         );
 
-        // Update the editContent state to remove the deleted image
         setEditContent((prevContent) => ({
           ...prevContent,
           Images: prevContent.Images.filter(
@@ -190,7 +188,6 @@ export default function Dashboard() {
           ),
         }));
 
-        // Simulate progress
         let progressValue = 0;
         const interval = setInterval(() => {
           progressValue += 10;
@@ -204,12 +201,7 @@ export default function Dashboard() {
         }, 100);
       } else {
         const errorText = await response.text();
-        try {
-          const error = JSON.parse(errorText);
-          alert(`Error: ${JSON.stringify(error)}`);
-        } catch (e) {
-          alert(`Error: ${errorText}`);
-        }
+        alert(`Error: ${errorText}`);
         setIsLoading(false);
       }
     } catch (error) {
@@ -229,18 +221,28 @@ export default function Dashboard() {
     setIsChanged(true);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setIsAlertOpen(true);
+  };
+
+  const handleConfirm = () => {
+    setIsAlertOpen(false);
+    handleUpdate();
+  };
+
   return (
-    <div className="flex flex-col items-center p-4">
-      <div className="flex justify-between items-center mb-6 md:mb-10">
-        <motion.h1
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-xl md:text-3xl font-extrabold text-green-900 text-center md:text-left"
-        >
-          Content List
-        </motion.h1>
-      </div>
+    <div className="p-4">
+      <div className="mb-6 md:mb-10">
+          <motion.h1
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-xl md:text-3xl font-extrabold text-green-900 text-center md:text-left"
+          >
+            Product List
+          </motion.h1>
+        </div>
 
       {error && <p className="text-red-500 mb-4">{error}</p>}
 
@@ -307,8 +309,7 @@ export default function Dashboard() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
           <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/2">
             <h2 className="text-lg font-bold mb-4">Edit Content</h2>
-            <form onSubmit={handleUpdate} className="space-y-6">
-              {/* Title Field */}
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <label
                   htmlFor="editTitle"
@@ -326,7 +327,6 @@ export default function Dashboard() {
                 />
               </div>
 
-              {/* Paragraph Field */}
               <div className="space-y-2">
                 <label
                   htmlFor="editParagraph"
@@ -369,7 +369,7 @@ export default function Dashboard() {
                           onClick={() => handleRemoveExistingImage(img.ImageID)}
                           className="text-red-500 hover:text-red-700 mt-1"
                         >
-                          Hapus
+                          Remove
                         </button>
                       </div>
                     ))}
@@ -392,19 +392,18 @@ export default function Dashboard() {
                     onClick={() => handleRemoveNewImage(index)}
                     className="text-red-500 hover:text-red-700"
                   >
-                    Hapus
+                    Remove
                   </button>
                 </div>
               ))}
 
-              {/* Action Buttons */}
               <div className="flex justify-end space-x-4">
                 <button
                   type="button"
                   onClick={() => setEditContent(null)}
                   className="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-white rounded-md shadow-sm"
                 >
-                  Tutup
+                  Cancel
                 </button>
                 <button
                   type="submit"
@@ -415,7 +414,7 @@ export default function Dashboard() {
                   }`}
                   disabled={!isChanged || isLoading}
                 >
-                  {isLoading ? "Updating..." : "Update"}
+                  {isLoading ? "Updating..." : "Update Content"}
                 </button>
               </div>
             </form>
@@ -423,6 +422,27 @@ export default function Dashboard() {
           </div>
         </div>
       )}
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Are you sure you want to update this content?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This action will update the content details.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirm}>
+              Confirm
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
