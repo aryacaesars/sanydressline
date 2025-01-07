@@ -40,7 +40,7 @@ const Footer = () => {
   };
 
   const handleContactClick = () => {
-    const phoneNumber = "6289524396489";
+    const phoneNumber = process.env.NEXT_PUBLIC_ADMIN_PHONE_NUMBER;
     const whatsappMessage = "Halo *SanyDressline*, saya ingin bertanya tentang produk";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
       whatsappMessage
