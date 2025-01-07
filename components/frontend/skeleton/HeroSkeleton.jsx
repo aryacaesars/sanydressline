@@ -3,7 +3,7 @@ import {Skeleton} from "@/components/ui/skeleton";
 const HeroSkeleton = () => {
     return (
         <section
-            className="container max-w-7xl min-h-screen mx-auto my-16 md:my-16 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-40 overflow-hidden">
+            className="container max-w-7xl min-h-screen mx-auto my-40 md:my-16 flex flex-col-reverse md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-40 overflow-hidden">
             <div className="flex-1">
                 <Skeleton className="h-10 w-[400px] mb-4"/>
                 <Skeleton className="h-10 w-[200px] mb-4"/>
