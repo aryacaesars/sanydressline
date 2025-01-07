@@ -59,8 +59,9 @@ const Navbar = () => {
   };
 
   const handleContactClick = () => {
-    const phoneNumber = "6289524396489";
-    const whatsappMessage = "Halo *SanyDressline*, saya ingin bertanya tentang produk";
+    const phoneNumber = process.env.NEXT_PUBLIC_ADMIN_PHONE_NUMBER;
+    const whatsappMessage =
+      "Halo *SanyDressline*, saya ingin bertanya tentang produk";
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
       whatsappMessage
     )}`;
@@ -149,15 +150,22 @@ const Navbar = () => {
                 </div>
 
                 {menuItems.map((item, index) => (
-                  <a
+                  <Link
                     key={index}
                     href={item.href}
-                    onClick={(e) => handleLinkClick(e, item.href)}
+                    onClick={(e) => {
+                      if (item.name === "Kontak") {
+                        e.preventDefault();
+                        handleContactClick();
+                      } else {
+                        handleLinkClick(e, item.href);
+                      }
+                    }}
                   >
-                    <p className="text-gray-700 hover:text-green-700 transition-all duration-300 w-full text-center">
+                    <p className="relative text-gray-700 hover:text-green-700 transition-all duration-300 after:content-[''] after:block after:h-[2px] after:bg-green-700 after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">
                       {item.name}
                     </p>
-                  </a>
+                  </Link>
                 ))}
               </div>
             </motion.div>

@@ -23,15 +23,15 @@ export default function Page() {
                 <Separator orientation="vertical" className="mr-2 h-4"/>
                 <Breadcrumb>
                     <BreadcrumbList>
-                        <BreadcrumbItem className="hidden md:block">
+                        <BreadcrumbItem className="md:block">
                             <BreadcrumbLink
                                 href="/dashboard">Dashboard</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator className="hidden md:block"/>
+                        <BreadcrumbSeparator className="md:block"/>
                         <BreadcrumbItem>
                             <BreadcrumbLink href="/dashboard/product">Product</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator className="hidden md:block"/>
+                        <BreadcrumbSeparator className="md:block"/>
                         <BreadcrumbItem>
                             <BreadcrumbPage>Product List</BreadcrumbPage>
                         </BreadcrumbItem>
