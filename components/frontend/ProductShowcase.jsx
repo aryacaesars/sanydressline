@@ -131,7 +131,7 @@ export default function DressShowcase() {
                         initial={{opacity: 0, y: -20}}
                         animate={{opacity: 1, y: 0}}
                         transition={{duration: 0.5}}
-                        className="text-xl md:text-3xl font-extrabold text-green-900 text-center md:text-left"
+                        className="text-xl md:text-3xl font-extrabold text-green-900 text-left"
                     >
                         Dress Collection
                     </motion.h1>
@@ -152,7 +152,7 @@ export default function DressShowcase() {
                     </Select>
                 </div>
                 <div id="product-section"
-                     className="grid md:grid-cols-3 grid-cols-2 gap-4 sm:gap-6">
+                     className="grid lg:grid-cols-3 md:grid-cols-3 sm:grid-cols-2 grid-cols-2 gap-0 sm:gap-6 lg:gap-8">
                     {loading
                         ? Array.from({length: dresses.length || ITEMS_PER_PAGE}).map(
                             (_, index) => <ProductSkeleton key={index}/>

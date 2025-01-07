@@ -20,7 +20,7 @@ const ProductCard = React.memo(({product, onAddToCart, onProductClick}) => {
     };
 
     return (
-        <section className='container p-6'>
+        <section className="container p-1">
         <Card className="w-full overflow-hidden bg-white shadow-lg rounded-xl">
             <motion.div
                 initial={{opacity: 0}}
@@ -59,7 +59,7 @@ const ProductCard = React.memo(({product, onAddToCart, onProductClick}) => {
                         className="mb-1 sm:mb-2"
                     >
                         <span
-                            className="text-xl sm:text-2xl font-bold text-primary">{PriceFormatted}</span>
+                            className="text-lg sm:text-2xl font-bold text-primary">{PriceFormatted}</span>
                     </motion.div>
                     <motion.p
                         initial={{opacity: 0}}
