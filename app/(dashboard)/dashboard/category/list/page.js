@@ -219,8 +219,8 @@ export default function CategoryDashboard() {
           <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/2">
             <h2 className="text-lg font-bold mb-4">Delete Category</h2>
             <p>
-              Are you sure you want to delete the category "
-              {deleteCategory.Name}"?
+              Are you sure you want to delete the category 
+              {deleteCategory.Name}?
             </p>
             <div className="flex justify-end space-x-4 mt-4">
               <button

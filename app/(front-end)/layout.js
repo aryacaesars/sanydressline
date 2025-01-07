@@ -28,7 +28,7 @@ export default function RootLayout({ children }) {
         <CartProvider>
             <Navbar />
             {children}
-            <div className="mt-96">
+            <div className="mt-36">
                 <Toaster />
                 <Footer />
             </div>

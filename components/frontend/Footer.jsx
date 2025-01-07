@@ -17,25 +17,16 @@ const Footer = () => {
   ];
 
   const handleLinkClick = (e, href) => {
-    if (href.startsWith("http")) {
-      return;
-    }
+    if (href.startsWith("http")) return;
 
     e.preventDefault();
-    if (pathname === "/checkout") {
-      router.push(`/${href}`);
-    } else {
-      const targetElement = document.querySelector(href);
-      if (targetElement) {
-        const offset = 180;
-        const elementPosition =
-          targetElement.getBoundingClientRect().top + window.pageYOffset;
-        const offsetPosition = elementPosition - offset;
-        window.scrollTo({
-          top: offsetPosition,
-          behavior: "smooth",
-        });
-      }
+    const targetElement = document.querySelector(href);
+    if (targetElement) {
+      const offset = 180;
+      const elementPosition =
+        targetElement.getBoundingClientRect().top + window.pageYOffset;
+      const offsetPosition = elementPosition - offset;
+      window.scrollTo({ top: offsetPosition, behavior: "smooth" });
     }
   };
 
@@ -45,58 +36,37 @@ const Footer = () => {
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
       whatsappMessage
     )}`;
-
     window.location.href = whatsappUrl;
   };
 
   return (
-    <footer id="footer" className="bg-green-800 text-white py-10 px-20">
-      <div className="container mx-auto grid grid-cols-1 lg:grid-cols-3 gap-y-8 lg:gap-8 text-sm">
+    <footer id="footer" className="bg-green-800 text-white py-10 px-6 md:px-20">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
         {/* Logo dan Media Sosial */}
-        <div className="lg:px-5">
+        <div className="text-center md:text-left">
           <Link href="/" legacyBehavior>
-            <Image
-              src={logo}
-              alt="SanyDressline Logo"
-              width={128}
-              height={32}
-              priority={true}
-            />
+            <Image src={logo} alt="SanyDressline Logo" width={128} height={32} priority className="mx-auto md:mx-0"/>
           </Link>
-          <p className="font-bold text-lg mt-8 mb-4 lg:px-1">Sosial Media</p>
-          <div className="flex space-x-4 lg:px-2">
-            <Link
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+          <p className="font-bold text-lg mt-4 mb-4">Sosial Media</p>
+          <div className="flex justify-center md:justify-start space-x-4">
+            <Link href="https://twitter.com" target="_blank" rel="noopener noreferrer">
               <FaTwitter className="text-white hover:text-gray-300" size={20} />
             </Link>
-            <Link
-              href="https://facebook.com"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <FaFacebook
-                className="text-white hover:text-gray-300"
-                size={20}
-              />
+            <Link href="https://facebook.com" target="_blank" rel="noopener noreferrer">
+              <FaFacebook className="text-white hover:text-gray-300" size={20} />
             </Link>
             <Link
-              href="https://www.instagram.com/sanydressline?igsh=MXBnZTd2NHZ0bHhjMA=="
+              href="https://www.instagram.com/sanydressline"
               target="_blank"
               rel="noopener noreferrer"
             >
-              <FaInstagram
-                className="text-white hover:text-gray-300"
-                size={20}
-              />
+              <FaInstagram className="text-white hover:text-gray-300" size={20} />
             </Link>
           </div>
         </div>
 
         {/* Navigasi */}
-        <div className="flex flex-col space-y-4">
+        <div className="text-center md:text-left">
           <p className="font-bold text-lg mb-4">Navigasi</p>
           {menuItems.map((item, index) => (
             <Link
@@ -110,26 +80,21 @@ const Footer = () => {
                   handleLinkClick(e, item.href);
                 }
               }}
+              className="block text-white hover:text-green-200 transition duration-300"
             >
-              <p className="text-white hover:text-green-200 transition-all duration-300">
-                {item.name}
-              </p>
+              {item.name}
             </Link>
           ))}
         </div>
 
         {/* Informasi */}
-        <div className="flex flex-col space-y-4">
+        <div className="text-center md:text-left">
           <p className="font-bold text-lg mb-4">Informasi</p>
-          <div className="mb-4">
-            <p className="text-white">Alamat : Jl. Jalan No. 123, Jakarta</p>
-          </div>
-          <div className="mb-4">
-            <p className="text-white">Email : sanydressline@mail.com</p>
-          </div>
-          <div className="mb-4">
-            <p className="text-white">No. Handphone : +62 812-3456-7890</p>
-          </div>
+          <a href="https://maps.app.goo.gl/yZ9itjLNrb5SRoZKA" target="blank">
+          <p className="text-white font-bold">Alamat: <span className="font-normal"><br />Perum De Nirwana Garden, Jl. Bebedahan 1 No.01 Blok D, Sukanagara, Purbaratu, Tasikmalaya Regency, West Java </span> </p>
+          </a>
+          <p className="text-white font-bold">Email: <span className="font-normal"><br />sanydressline@gmail.com</span></p>
+          <p className="text-white font-bold">No. Handphone: <span className="font-normal"><br />0895361619535</span></p> 
         </div>
       </div>
 
@@ -146,6 +111,7 @@ const Footer = () => {
             <a className="hover:underline">Cookies</a>
           </Link>
         </div>
+        <p className="mt-4">&copy; 2025 SanyDressline. All rights reserved.</p>
       </div>
     </footer>
   );
