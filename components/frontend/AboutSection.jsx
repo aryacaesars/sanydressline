@@ -45,7 +45,7 @@ const AboutSection = () => {
 
   return (
     <section id="about-us" className="container md:px-20 mx-auto md:my-28 flex flex-col md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-40">
-      <div className="flex-1 order-2 md:order-1 md:ml-2">
+      <div className="flex-1 order-1 md:order-2 md:ml-2">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -63,7 +63,7 @@ const AboutSection = () => {
         </motion.div>
       </div>
 
-      <div className="flex-1 order-1 md:order-2 md:-ml-60">
+      <div className="flex-1 order-2 md:order-1 md:-ml-60">
         <motion.h1
           className="text-4xl font-bold text-green-800 leading-snug mb-4"
           initial={{ opacity: 0, y: 50 }}
