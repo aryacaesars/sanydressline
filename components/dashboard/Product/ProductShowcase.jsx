@@ -182,7 +182,7 @@ export default function DressShowcase() {
           </motion.h1>
           <FilterPanel onFilterChange={handleFilterChange} />
         </div>
-        <div id="product-section" className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mt-6">
+        <div id="product-section" className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 mt-6">
           {loading
             ? Array.from({ length: dresses.length || ITEMS_PER_PAGE }).map((_, index) => <ProductSkeleton key={index} />)
             : currentDresses.map((dress) => (
