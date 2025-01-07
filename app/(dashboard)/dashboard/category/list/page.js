@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export default function CategoryDashboard() {
   const [categories, setCategories] = useState([]);
@@ -101,58 +102,61 @@ export default function CategoryDashboard() {
 
   return (
     <div className="flex flex-col items-center p-4 md:p-8">
-      <div className="flex justify-between items-center mb-6 md:mb-10 w-full">
+      <div className="flex flex-wrap justify-between items-center mb-6 md:mb-10 w-full">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="text-xl md:text-3xl font-extrabold text-green-900 text-center md:text-left"
+          className="text-lg sm:text-xl md:text-3xl font-extrabold text-green-900 text-center md:text-left w-full md:w-auto"
         >
           Category List
         </motion.h1>
       </div>
 
-      {error && <p className="text-red-500 mb-4">{error}</p>}
+      {error && <p className="text-red-500 mb-4 text-center">{error}</p>}
 
       {loading ? (
-        <p>Loading...</p>
+        <p className="text-center">Loading...</p>
       ) : (
         <div className="overflow-x-auto w-full">
           <table className="table-auto border-collapse border border-gray-300 w-full text-left text-sm md:text-base">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border border-gray-300 px-4 py-2">Category ID</th>
-                <th className="border border-gray-300 px-4 py-2">Name</th>
-                <th className="border border-gray-300 px-4 py-2">Dress Count</th>
-                <th className="border border-gray-300 px-4 py-2">Actions</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2">Category ID</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2">Name</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2">Dress Count</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2">Actions</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((category) => (
                 <tr key={category.CategoryID} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-2 md:px-4 py-2">
                     {category.CategoryID}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-2 md:px-4 py-2">
                     {category.Name}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
+                  <td className="border border-gray-300 px-2 md:px-4 py-2">
                     {category.DressCount}
                   </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    <button
+                  <td className="border border-gray-300 px-2 md:px-4 py-2">
+                    <div className="flex items-center">
+                    <Button
                       onClick={() => handleEdit(category)}
-                      className="text-blue-500 hover:text-blue-700 mr-2"
+                      className="text-white p-3 bg-blue-500 hover:bg-blue-700 rounded-xl mr-2"
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => setDeleteCategory(category)}
-                      className="text-red-500 hover:text-red-700"
+                      className="text-white p-3  bg-red-600 rounded-xl hover:bg-red-700"
                     >
                       Delete
-                    </button>
+                    </Button>
+                  </div>
                   </td>
+
                 </tr>
               ))}
             </tbody>
@@ -162,7 +166,7 @@ export default function CategoryDashboard() {
 
       {editCategory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-          <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/2">
+          <div className="bg-white p-4 sm:p-6 rounded-lg w-11/12 md:w-1/2">
             <h2 className="text-lg font-bold mb-4">Edit Category</h2>
             <form onSubmit={handleUpdate} className="space-y-6">
               <div className="space-y-2">
@@ -204,11 +208,10 @@ export default function CategoryDashboard() {
 
       {deleteCategory && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-          <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/2">
+          <div className="bg-white p-4 sm:p-6 rounded-lg w-11/12 md:w-1/2">
             <h2 className="text-lg font-bold mb-4">Delete Category</h2>
-            <p>
-              Are you sure you want to delete the category "
-              {deleteCategory.Name}"?
+            <p className="text-sm md:text-base">
+              Are you sure you want to delete the category {deleteCategory.Name}?
             </p>
             <div className="flex justify-end space-x-4 mt-4">
               <button
