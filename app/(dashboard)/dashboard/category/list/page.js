@@ -100,8 +100,8 @@ export default function CategoryDashboard() {
   };
 
   return (
-    <div className="flex flex-col items-center p-4">
-      <div className="flex justify-between items-center mb-6 md:mb-10">
+    <div className="flex flex-col items-center p-4 md:p-8">
+      <div className="flex justify-between items-center mb-6 md:mb-10 w-full">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,18 +118,12 @@ export default function CategoryDashboard() {
         <p>Loading...</p>
       ) : (
         <div className="overflow-x-auto w-full">
-          <table className="table-auto border-collapse border border-gray-300 w-full text-left">
+          <table className="table-auto border-collapse border border-gray-300 w-full text-left text-sm md:text-base">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border border-gray-300 px-4 py-2">
-                  Category ID
-                </th>
+                <th className="border border-gray-300 px-4 py-2">Category ID</th>
                 <th className="border border-gray-300 px-4 py-2">Name</th>
-                <th className="border border-gray-300 px-4 py-2">Created At</th>
-                <th className="border border-gray-300 px-4 py-2">Updated At</th>
-                <th className="border border-gray-300 px-4 py-2">
-                  Dress Count
-                </th>
+                <th className="border border-gray-300 px-4 py-2">Dress Count</th>
                 <th className="border border-gray-300 px-4 py-2">Actions</th>
               </tr>
             </thead>
@@ -141,12 +135,6 @@ export default function CategoryDashboard() {
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {category.Name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {new Date(category.CreatedAt).toLocaleString()}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-2">
-                    {new Date(category.UpdatedAt).toLocaleString()}
                   </td>
                   <td className="border border-gray-300 px-4 py-2">
                     {category.DressCount}
