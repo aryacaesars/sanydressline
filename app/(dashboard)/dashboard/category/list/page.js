@@ -122,41 +122,40 @@ export default function CategoryDashboard() {
           <table className="table-auto border-collapse border border-gray-300 w-full text-left text-sm md:text-base">
             <thead className="bg-gray-100">
               <tr>
-                <th className="border border-gray-300 px-2 md:px-4 py-2">Category ID</th>
-                <th className="border border-gray-300 px-2 md:px-4 py-2">Name</th>
-                <th className="border border-gray-300 px-2 md:px-4 py-2">Dress Count</th>
-                <th className="border border-gray-300 px-2 md:px-4 py-2">Actions</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2 text-center">Category ID</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2 text-center">Name</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2 text-center">Dress Count</th>
+                <th className="border border-gray-300 px-2 md:px-4 py-2 text-center">Actions</th>
               </tr>
             </thead>
             <tbody>
               {categories.map((category) => (
                 <tr key={category.CategoryID} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 px-2 md:px-4 py-2">
+                  <td className="border border-gray-300 px-2 md:px-4 py-2 text-center">
                     {category.CategoryID}
                   </td>
-                  <td className="border border-gray-300 px-2 md:px-4 py-2">
+                  <td className="border border-gray-300 px-2 md:px-4 py-2 text-center">
                     {category.Name}
                   </td>
-                  <td className="border border-gray-300 px-2 md:px-4 py-2">
+                  <td className="border border-gray-300 px-2 md:px-4 py-2 text-center">
                     {category.DressCount}
                   </td>
                   <td className="border border-gray-300 px-2 md:px-4 py-2">
-                    <div className="flex items-center">
-                    <Button
-                      onClick={() => handleEdit(category)}
-                      className="text-white p-3 bg-blue-500 hover:bg-blue-700 rounded-xl mr-2"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => setDeleteCategory(category)}
-                      className="text-white p-3  bg-red-600 rounded-xl hover:bg-red-700"
-                    >
-                      Delete
-                    </Button>
-                  </div>
+                    <div className="flex flex-col md:flex-row  items-center">
+                      <Button
+                        onClick={() => handleEdit(category)}
+                        className="text-white p-3 px-5 bg-blue-500 hover:bg-blue-700 rounded-xl my-2 md:mx-2"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => setDeleteCategory(category)}
+                        className="text-white p-3 bg-red-600 rounded-xl hover:bg-red-700"
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </td>
-
                 </tr>
               ))}
             </tbody>

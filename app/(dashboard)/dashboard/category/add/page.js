@@ -106,16 +106,16 @@ export default function AddCategory() {
         <Button
           type="button"
           onClick={handleAddInput}
-          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-xl shadow-sm hover:bg-blue-700"
+          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-xl shadow-sm hover:bg-blue-700 sm:px-6 sm:py-3 sm:text-base"
         >
           Add Another Category
         </Button>
 
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-end space-x-4 mt-4 sm:mt-0">
           <button
             type="button"
             onClick={() => router.push("/dashboard/category/list")}
-            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-white rounded-md shadow-sm"
+            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-black bg-white rounded-md shadow-sm sm:px-6 sm:py-3 sm:text-base"
           >
             Cancel
           </button>

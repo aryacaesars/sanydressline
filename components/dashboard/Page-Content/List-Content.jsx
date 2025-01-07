@@ -307,7 +307,7 @@ export default function Dashboard() {
 
       {editContent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-          <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/2">
+          <div className="bg-white p-6 rounded-lg w-11/12 md:w-1/2 max-h-screen overflow-y-auto">
             <h2 className="text-lg font-bold mb-4">Edit Content</h2>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
