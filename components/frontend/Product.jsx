@@ -20,6 +20,7 @@ const ProductCard = React.memo(({product, onAddToCart, onProductClick}) => {
     };
 
     return (
+        <section className='container p-6'>
         <Card className="w-full overflow-hidden bg-white shadow-lg rounded-xl">
             <motion.div
                 initial={{opacity: 0}}
@@ -91,6 +92,7 @@ const ProductCard = React.memo(({product, onAddToCart, onProductClick}) => {
                 </CardFooter>
             </motion.div>
         </Card>
+        </section>
     );
 });
 

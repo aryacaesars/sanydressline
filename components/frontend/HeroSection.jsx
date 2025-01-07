@@ -59,7 +59,7 @@ const HeroSection = () => {
 
     return (
         <section
-            className="container max-w-7xl min-h-screen mx-auto my-40 md:my-16 flex flex-col-reverse md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-6 md:gap-40 overflow-hidden">
+            className="container my-20 md:px-20 mx-auto md:my-28 flex flex-col-reverse md:flex-row items-center justify-between rounded-2xl p-6 md:p-10 gap-10 md:gap-40  overflow-hidden">
             <div className="flex-1">
                 <motion.h1
                     className="text-2xl md:text-4xl font-bold text-green-800 leading-snug mb-4"
@@ -70,7 +70,7 @@ const HeroSection = () => {
                     {heroContent.Title}
                 </motion.h1>
                 <motion.p
-                    className="text-sm md:text-base text-gray-700 mb-4"
+                    className="text-sm md:text-base text-gray-700 mb-4 hidden md:block"
                     initial={{opacity: 0, x: -50}}
                     animate={{opacity: 1, x: 0}}
                     transition={{duration: 0.7, delay: 0.3, ease: "easeOut"}}
