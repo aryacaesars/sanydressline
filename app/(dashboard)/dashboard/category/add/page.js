@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 export default function AddCategory() {
   const [categoryNames, setCategoryNames] = useState([""]);
@@ -102,13 +103,13 @@ export default function AddCategory() {
           </div>
         ))}
 
-        <button
+        <Button
           type="button"
           onClick={handleAddInput}
-          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-md shadow-sm hover:bg-blue-700"
+          className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-blue-500 border border-transparent rounded-xl shadow-sm hover:bg-blue-700"
         >
           Add Another Category
-        </button>
+        </Button>
 
         <div className="flex justify-end space-x-4">
           <button
@@ -120,7 +121,7 @@ export default function AddCategory() {
           </button>
           <button
             type="submit"
-            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-black border border-transparent rounded-md shadow-sm hover:bg-gray-800"
+            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-black border border-transparent rounded-xl shadow-sm hover:bg-gray-800"
             disabled={isLoading}
           >
             {isLoading ? "Adding..." : "Add Category"}
