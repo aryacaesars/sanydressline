@@ -27,14 +27,16 @@ export default function Page() {
                 <Separator orientation="vertical" className="mr-2 h-4"/>
                 <Breadcrumb>
                     <BreadcrumbList>
-                        <BreadcrumbItem className="hidden md:block">
-                            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+                        <BreadcrumbItem className="md:block">
+                            <BreadcrumbLink
+                                href="/dashboard">Dashboard</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator className="hidden md:block"/>
+                        <BreadcrumbSeparator className="md:block"/>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href="/dashboard/product">Product</BreadcrumbLink>
+                            <BreadcrumbLink
+                                href="/dashboard/product">Product</BreadcrumbLink>
                         </BreadcrumbItem>
-                        <BreadcrumbSeparator className="hidden md:block"/>
+                        <BreadcrumbSeparator className="md:block"/>
                         <BreadcrumbItem>
                             <BreadcrumbPage>Add Product</BreadcrumbPage>
                         </BreadcrumbItem>
@@ -47,7 +49,7 @@ export default function Page() {
                 </div>
                 <AddProduct/>
                 <div
-                    className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min"/>
+                    className="flex-1 rounded-xl bg-muted/50 md:min-h-min"/>
             </div>
         </SidebarInset>
     );
