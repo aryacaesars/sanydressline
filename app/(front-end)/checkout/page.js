@@ -60,7 +60,7 @@ const Checkout = React.memo(() => {
   }, [cartItems]);
 
   const handleProceedToPayment = () => {
-    const phoneNumber = "6285697280061"; // Ganti dengan nomor WhatsApp Anda
+    const phoneNumber = process.env.NEXT_PUBLIC_ADMIN_PHONE_NUMBER; 
     const message = cartItems
       .map((item) => {
         const size = item.Sizes.find(
@@ -184,14 +184,14 @@ const Checkout = React.memo(() => {
             className="w-full bg-primary text-primary-foreground hover:bg-primary/90 py-3 rounded-lg"
             onClick={handleProceedToPayment}
           >
-            Proceed to Payment
+            Pesan sekarang
           </Button>
           <Button
             variant="outline"
             className="w-full py-3 rounded-lg"
             onClick={() => router.push("/")}
           >
-            Continue Shopping
+            Lanjutkan memilih produk
           </Button>
         </motion.div>
       </div>
