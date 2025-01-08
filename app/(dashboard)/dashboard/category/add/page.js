@@ -2,6 +2,19 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -58,8 +71,24 @@ export default function AddCategory() {
   };
 
   return (
-    <div className="flex flex-col items-center p-4">
-      <div className="flex justify-between items-center mb-6 md:mb-10">
+    <SidebarInset>
+    <header className="flex h-16 items-center gap-2 border-b px-4">
+    <SidebarTrigger className="-ml-1" />
+    <Separator orientation="vertical" className="mr-2 h-4" />
+    <Breadcrumb>
+    <BreadcrumbList>
+    <BreadcrumbItem>
+    <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+    </BreadcrumbItem>
+    <BreadcrumbSeparator />
+    <BreadcrumbItem>
+    <BreadcrumbPage>Add Category</BreadcrumbPage>
+    </BreadcrumbItem>
+    </BreadcrumbList>
+    </Breadcrumb>
+    </header>
+    <div className="flex flex-col items-left p-4">
+      <div className="flex justify-between items-left mb-6 md:mb-10">
         <motion.h1
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -111,7 +140,7 @@ export default function AddCategory() {
           Add Another Category
         </Button>
 
-        <div className="flex justify-end space-x-4 mt-4 sm:mt-0">
+        <div className="flex items-left space-x-4 mt-4 sm:mt-0">
           <button
             type="button"
             onClick={() => router.push("/dashboard/category/list")}
@@ -129,5 +158,6 @@ export default function AddCategory() {
         </div>
       </form>
     </div>
+    </SidebarInset>
   );
 }
