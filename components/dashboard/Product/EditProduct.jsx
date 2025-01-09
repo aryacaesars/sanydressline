@@ -1,4 +1,3 @@
-// components/dashboard/Product/EditProduct.jsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -126,7 +125,7 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] p-6">
+      <DialogContent className="sm:max-w-[600px] p-6 overflow-y-auto max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Edit Product</DialogTitle>
           <DialogDescription>
