@@ -32,7 +32,6 @@ const AddProduct = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [price, setPrice] = useState("");
   const router = useRouter();
 
   const form = useForm({
@@ -74,16 +73,6 @@ const AddProduct = () => {
 
     const previews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews(previews);
-  };
-
-  const formatPrice = (value) => {
-    return value.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  };
-
-  const handlePriceChange = (e) => {
-    const { value } = e.target;
-    const numericValue = value.replace(/,/g, "");
-    setPrice(formatPrice(numericValue));
   };
 
   const onSubmit = async (data) => {
@@ -176,11 +165,11 @@ const AddProduct = () => {
               <FormItem>
                 <FormLabel>Price</FormLabel>
                 <FormControl>
-                  <input
-                    type="text"
-                    value={price}
-                    onChange={handlePriceChange}
-                    placeholder="Enter price"
+                  <Input
+                    type="number"
+                    placeholder="Product Price"
+                    {...field}
+                    onChange={(e) => field.onChange(parseFloat(e.target.value))}
                   />
                 </FormControl>
                 <FormMessage />
