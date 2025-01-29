@@ -76,14 +76,11 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                 >
                     <div className="flex flex-col md:grid md:grid-cols-2 overflow-y-auto max-h-screen">
                         <div className="p-4 border-b md:border-b-0 md:border-r">
-                            <Image
-                                src={ProductImages[0]?.Url}
-                                alt={Name}
-                                className="w-full h-full object-cover rounded-lg"
-                                width={500} // Adjust width and height to match your layout
-                                height={500}
-                                priority
-                            />
+                            <div className="product-images">
+                                {ProductImages.map((imgSrc, index) => (
+                                    <Image key={index} src={imgSrc.Url} alt={`Product Image ${index + 1}`} width={500} height={500} />
+                                ))}
+                            </div>
                         </div>
                         <div className="p-6 relative flex flex-col">
                             <button
