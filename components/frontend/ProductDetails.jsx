@@ -7,6 +7,8 @@ import { Alert } from "@/components/ui/alert";
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Carousel } from 'react-responsive-carousel';
+import 'react-responsive-carousel/lib/styles/carousel.min.css';
 
 const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
     const { Image: ProductImages, Name, PriceFormatted, Description, Sizes, Category, OrderCount } = product;
@@ -76,11 +78,13 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                 >
                     <div className="flex flex-col md:grid md:grid-cols-2 overflow-y-auto max-h-screen">
                         <div className="p-4 border-b md:border-b-0 md:border-r">
-                            <div className="product-images">
+                            <Carousel showThumbs={false} dynamicHeight={true}>
                                 {ProductImages.map((imgSrc, index) => (
-                                    <Image key={index} src={imgSrc.Url} alt={`Product Image ${index + 1}`} width={500} height={500} />
+                                    <div key={index}>
+                                        <Image src={imgSrc.Url} alt={`Product Image ${index + 1}`} width={500} height={500} />
+                                    </div>
                                 ))}
-                            </div>
+                            </Carousel>
                         </div>
                         <div className="p-6 relative flex flex-col">
                             <button
@@ -98,7 +102,7 @@ const ProductDetails = React.memo(({ product, onClose, onAddToCart }) => {
                                     {Sizes.map((size) => (
                                         <button
                                             key={size.SizeID}
-                                            className={`px-4 rounded-xl py-2 border rounded-md text-sm font-medium transition-all ${selectedSize === size.SizeID ? 'bg-green-900 text-white border-green-900' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-100'}`}
+                                            className={`px-4 rounded-xl py-2 border rounded-md text-sm font-medium transition-all ${selectedSize === size.SizeID ? 'bg-green-900 text-white border-green-900' : 'border-gray-300 bg-white text-gray-700'}`}
                                             onClick={() => handleSizeClick(size.SizeID)}
                                         >
                                             {size.Size}
