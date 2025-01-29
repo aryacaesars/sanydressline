@@ -42,12 +42,12 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
+const EditProduct = ({ isOpen, onClose, product, onSubmit }) => {
   const [categories, setCategories] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [formData, setFormData] = useState(null);
-
+  const [photo, setPhoto] = useState(null);
 
   const form = useForm({
     resolver: zodResolver(editProductSchema),
@@ -62,7 +62,6 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
       orderCount: product?.OrderCount || 0,
     },
   });
-
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -104,6 +103,14 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
 
     const previews = files.map((file) => URL.createObjectURL(file));
     setImagePreviews(previews);
+  };
+
+  const handlePhotoChange = (e) => {
+    setPhoto(e.target.files[0]);
+  };
+
+  const handlePhotoDelete = () => {
+    setPhoto(null);
   };
 
   const handleSubmit = (data) => {
@@ -256,6 +263,19 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
               ))}
               <Button type="button" onClick={() => append({ Size: "", Stock: 0 })}>Add Size</Button>
             </div>
+            <FormItem>
+              <FormLabel>Product Photo</FormLabel>
+              <FormControl>
+                <input type="file" onChange={handlePhotoChange} />
+                {photo && (
+                  <div>
+                    <p>{photo.name}</p>
+                    <button type="button" onClick={handlePhotoDelete}>Delete Photo</button>
+                  </div>
+                )}
+              </FormControl>
+              <FormMessage>{form.formState.errors.photo?.message}</FormMessage>
+            </FormItem>
             <DialogFooter>
               <Button type="submit">Update Product</Button>
               <Button variant="secondary" onClick={onClose}>Cancel</Button>
@@ -281,4 +301,4 @@ const EditProductModal = ({ isOpen, onClose, product, onSubmit }) => {
   );
 };
 
-export default EditProductModal;
+export default EditProduct;
